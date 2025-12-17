@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Font Test</title>
+    <style>
+      @font-face {
+        font-family: "Decimal";
+        src: url("../src/assets/fonts/decimal-medium.ttf") format("truetype");
+        font-weight: 500;
+        font-style: normal;
+        font-display: swap;
+      }
+
+      .decimal-test {
+        font-family: "Decimal", sans-serif;
+        font-size: 24px;
+        font-weight: 500;
+        margin: 20px;
+      }
+
+      .fallback-test {
+        font-family: sans-serif;
+        font-size: 24px;
+        font-weight: 500;
+        margin: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Font Loading Test</h1>
+    <div class="decimal-test">This text should be in Decimal font</div>
+    <div class="fallback-test">This text is in fallback font</div>
+  </body>
+</html>

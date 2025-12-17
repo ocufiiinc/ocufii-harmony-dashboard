@@ -1,0 +1,111 @@
+/* Decimal Font Family - Clean Implementation */
+
+@font-face {
+  font-family: "Decimal";
+  src: url("./decimal-light.ttf") format("truetype");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Decimal";
+  src: url("./decimal-book.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Decimal";
+  src: url("./decimal-medium.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Decimal";
+  src: url("./decimal-semibold.ttf") format("truetype");
+  font-weight: 450;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Decimal";
+  src: url("./decimal-bold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Decimal";
+  src: url("./decimal-extrablack.otf") format("opentype");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Decimal";
+  src: url("./decimal-black.ttf") format("truetype");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Decimal";
+  src: url("./decimal-ultra.ttf") format("truetype");
+  font-weight: 950;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Decimal";
+  src: url("./decimal-ultra-italic.ttf") format("truetype");
+  font-weight: 950;
+  font-style: italic;
+  font-display: swap;
+}
+
+/* Font utility classes */
+.font-decimal {
+  font-family: "Decimal", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    sans-serif;
+}
+
+.font-light {
+  font-weight: 300;
+}
+
+.font-normal {
+  font-weight: 400;
+}
+
+.font-medium {
+  font-weight: 500;
+}
+
+.font-semibold {
+  font-weight: 600;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+.font-extrabold {
+  font-weight: 800;
+}
+
+.font-black {
+  font-weight: 900;
+}
+
+.font-ultra {
+  font-weight: 950;
+}

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <link rel="icon" type="image/svg+xml" href="logo2.png" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Ocufii &reg;</title>
+
+    <!-- Preload Decimal fonts for better performance -->
+
+    <link
+      rel="preload"
+      href="src/assets/fonts/decimal-medium.ttf"
+      as="font"
+      type="font/ttf"
+      crossorigin
+    />
+
+    <link
+      rel="preload"
+      href="src/assets/fonts/decimal-semibold.ttf"
+      as="font"
+      type="font/ttf"
+      crossorigin
+    />
+
+    <link
+      href="https://api.tiles.mapbox.com/mapbox-gl-js/v3.16.0/mapbox-gl.css"
+      rel="stylesheet"
+    />
+
+    <!-- Load config.js to set global variables -->
+
+    <script src="config.js"></script>
+  </head>
+
+  <body>
+    <div id="root"></div>
+
+    <script type="module" src="src/main.jsx"></script>
+  </body>
+</html>
