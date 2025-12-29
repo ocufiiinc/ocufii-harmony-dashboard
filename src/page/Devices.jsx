@@ -12,13 +12,9 @@ import { useUser } from "../context/UserContext";
 import { getAllDevices } from "../api/DevicesApi";
 import {
   BeaconColumn,
-  BeaconData,
   HubsColumn,
-  HubsData,
   ConnectedLocksColumn,
-  ConnectedLocksData,
   SafetyWearableCardsColumn,
-  SafetyWearableCardsData,
 } from "../common/ExampleData";
 import { Loader } from "../styles/Loader";
 

@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
-import { TimePicker } from "react-wheel-time-picker";
+import React, { useState, useEffect, useRef } from "react";
 import {
   RightSection,
   SettingsSection,
   SectionTitle,
 } from "../../styles/DeviceDetails.styled";
+import checkImg from "../../assets/images/check-badge.svg";
 
 import {
   SnoozeContainer,
@@ -15,6 +15,10 @@ import {
   SnoozeButtons,
   BackButton,
   SnoozeActionButton,
+  TimePickerContainer,
+  TimePickerColumn,
+  TimePickerItem,
+  TimePickerLabel,
 } from "../../styles/SnoozeMode.styled";
 
 const SnoozeMode = ({
@@ -24,8 +28,16 @@ const SnoozeMode = ({
   onSnoozeStart,
   onSnoozeCancel,
 }) => {
-  const [timeValue, setTimeValue] = useState("08:00");
+  const [selectedHours, setSelectedHours] = useState(8);
+  const [selectedMinutes, setSelectedMinutes] = useState(0);
   const [remainingTime, setRemainingTime] = useState(null);
+  const hoursRef = useRef(null);
+  const minutesRef = useRef(null);
+
+  const hours = Array.from({ length: 24 }, (_, i) => i);
+  const minutes = Array.from({ length: 60 }, (_, i) => i);
+
+  console.log("Device Data:", deviceData);
 
   // Check if device is currently snoozed
   const isSnoozed = deviceData.snoozeEndTime && deviceData.snoozeEndTime !== "";
@@ -57,16 +69,30 @@ const SnoozeMode = ({
     setRemainingTime({ hours: hrs, minutes: mins });
   };
 
-  const handleTimeChange = (value) => {
-    setTimeValue(value);
+  const handleScroll = (ref, items, setter) => {
+    if (!ref.current) return;
+    const container = ref.current;
+    const itemHeight = 50;
+    const scrollTop = container.scrollTop;
+    const index = Math.round(scrollTop / itemHeight);
+    const clampedIndex = Math.max(0, Math.min(index, items.length - 1));
+    setter(items[clampedIndex]);
   };
 
+  useEffect(() => {
+    // Scroll to initial values
+    if (hoursRef.current) {
+      hoursRef.current.scrollTop = selectedHours * 50;
+    }
+    if (minutesRef.current) {
+      minutesRef.current.scrollTop = selectedMinutes * 50;
+    }
+  }, []);
+
   const handleStartSnooze = () => {
-    // Parse the time value (format: "HH:MM")
-    const [hours, minutes] = timeValue.split(":").map(Number);
     const snoozeEndTime = new Date();
-    snoozeEndTime.setHours(snoozeEndTime.getHours() + hours);
-    snoozeEndTime.setMinutes(snoozeEndTime.getMinutes() + minutes);
+    snoozeEndTime.setHours(snoozeEndTime.getHours() + selectedHours);
+    snoozeEndTime.setMinutes(snoozeEndTime.getMinutes() + selectedMinutes);
     onSnoozeStart(snoozeEndTime.toISOString());
   };
 
@@ -188,47 +214,52 @@ const SnoozeMode = ({
               >
                 Snooze {deviceType} Notification For:
               </p>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "center",
-                  padding: "24px 0",
-                }}
-              >
-                <TimePicker
-                  value={timeValue}
-                  onChange={handleTimeChange}
-                  pickerDefaultValue="08:00"
-                  cellHeight={50}
-                  placeHolder="Select Time"
-                />
-              </div>
+              <TimePickerContainer>
+                <TimePickerColumn
+                  ref={hoursRef}
+                  onScroll={() =>
+                    handleScroll(hoursRef, hours, setSelectedHours)
+                  }
+                >
+                  {hours.map((hour) => (
+                    <TimePickerItem
+                      key={hour}
+                      $selected={hour === selectedHours}
+                    >
+                      {hour}
+                    </TimePickerItem>
+                  ))}
+                </TimePickerColumn>
+                <TimePickerLabel>Hours</TimePickerLabel>
+                <TimePickerColumn
+                  ref={minutesRef}
+                  onScroll={() =>
+                    handleScroll(minutesRef, minutes, setSelectedMinutes)
+                  }
+                >
+                  {minutes.map((minute) => (
+                    <TimePickerItem
+                      key={minute}
+                      $selected={minute === selectedMinutes}
+                    >
+                      {minute.toString().padStart(2, "0")}
+                    </TimePickerItem>
+                  ))}
+                </TimePickerColumn>
+                <TimePickerLabel>Minutes</TimePickerLabel>
+              </TimePickerContainer>
             </SnoozeContainer>
 
             <SnoozeButtons>
               <BackButton onClick={onBack}>Back</BackButton>
               <SnoozeActionButton onClick={handleStartSnooze}>
-                <svg
+                <img
+                  src={checkImg}
+                  alt="check"
                   width="16"
                   height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  style={{ marginRight: "8px" }}
-                >
-                  <circle
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  />
-                  <path
-                    d="M12 6V12L16 14"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                  />
-                </svg>
+                  style={{ marginRight: "8px", color: "#fff" }}
+                />
                 Start Snooze Mode
               </SnoozeActionButton>
             </SnoozeButtons>

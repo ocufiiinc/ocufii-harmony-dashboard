@@ -41,14 +41,71 @@ export const SnoozeSubtitle = styled.div`
 `;
 
 export const TimePickerContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  padding: 24px 0;
   background: #ffffff;
   border: 1px solid #e0e0e0;
   border-radius: 12px;
-  padding: 48px 32px;
+  position: relative;
+
+  &::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 50px;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+    pointer-events: none;
+    z-index: 1;
+  }
+`;
+
+export const TimePickerColumn = styled.div`
+  height: 200px;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+  position: relative;
+  z-index: 2;
+
+  /* Hide scrollbar but keep functionality */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Add padding to center items */
+  padding: 75px 0;
+`;
+
+export const TimePickerItem = styled.div`
+  height: 50px;
   display: flex;
+  align-items: center;
   justify-content: center;
-  gap: 48px;
-  margin-bottom: 32px;
+  font-size: ${(props) => (props.$selected ? "24px" : "18px")};
+  font-weight: ${(props) => (props.$selected ? "600" : "400")};
+  color: ${(props) => (props.$selected ? "#000" : "#ccc")};
+  font-family: "Decimal", sans-serif;
+  scroll-snap-align: center;
+  transition: all 0.2s ease;
+  min-width: 60px;
+`;
+
+export const TimePickerLabel = styled.div`
+  font-size: 16px;
+  color: #000;
+  font-weight: 500;
+  font-family: "Decimal", sans-serif;
+  display: flex;
+  align-items: center;
 `;
 
 export const TimeColumn = styled.div`
