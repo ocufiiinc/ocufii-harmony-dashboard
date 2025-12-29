@@ -26,6 +26,7 @@
     "react-map-gl": "^8.1.0",
     "react-router-dom": "^7.9.4",
     "react-toastify": "^11.0.5",
+    "react-wheel-time-picker": "^1.2.11",
     "styled-components": "^6.1.19",
     "uuid": "^13.0.0",
     "yup": "^1.7.1"

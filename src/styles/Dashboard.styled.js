@@ -1162,6 +1162,7 @@ export const AlertsChartContainer = styled.div`
 
     .month-selector {
       padding: 6px 12px;
+      margin-right: 5px;
       border: 1px solid ${({ theme }) => theme.colors.border};
       border-radius: ${({ theme }) => theme.borderRadius.sm};
       background: ${({ theme }) => theme.colors.background};

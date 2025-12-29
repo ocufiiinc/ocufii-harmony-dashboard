@@ -116,6 +116,13 @@ const Alerts = () => {
   const securityAlerts = transformAlertData(data?.data?.security?.alerts || []);
   const systemAlerts = transformAlertData(data?.data?.system?.alerts || []);
 
+  // Combine all alerts for chart data
+  const allAlertsForChart = [
+    ...(data?.data?.safety?.alerts || []),
+    ...(data?.data?.security?.alerts || []),
+    ...(data?.data?.system?.alerts || []),
+  ];
+
   // Combine all alerts for Open Alerts (only unacknowledged)
   const allAlertsRaw = [
     ...(data?.data?.safety?.alerts || []),
@@ -129,24 +136,6 @@ const Alerts = () => {
 
   // Resolved Alerts (where acknowledge is 3)
   const resolvedAlerts = transformResolvedAlerts(allAlertsRaw);
-
-  // Example data for Safety Alerts table (dummy data for Open, Acknowledge, Resolved)
-  const safetyAlertsData = [
-    {
-      sender: "Sabrina",
-      alert: "Emergency Alert",
-      alertIcon: "🚨",
-      time: "07:54:59",
-      date: "July 9, 2025",
-    },
-    {
-      sender: "Albert",
-      alert: "Active Shooter Alert",
-      alertIcon: "📢",
-      time: "07:54:59",
-      date: "July 7, 2025",
-    },
-  ];
 
   // Handler for action button clicks
   const handleAlertAction = (row, index) => {
@@ -308,7 +297,7 @@ const Alerts = () => {
               </AlertsMainContent>
             </AlertsContent>
 
-            <AlertsChart data={alertsChartData} />
+            <AlertsChart />
           </AlertsContainer>
         </DashboardContent>
       </DashboardLayout>

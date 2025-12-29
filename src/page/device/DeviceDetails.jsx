@@ -5,6 +5,7 @@ import DashboardLayout from "../../Layout/DashboardLayout";
 import GeneralSettings from "../../components/DeviceSettings/GeneralSettings";
 import DeleteDevice from "../../components/DeviceSettings/DeleteDevice";
 import ConnectedBeacons from "../../components/DeviceSettings/ConnectedBeacons";
+import SnoozeMode from "../../components/DeviceSettings/SnoozeMode";
 import { useUser } from "../../context/UserContext";
 import { getAllDevices } from "../../api/DevicesApi";
 import deleteIcon from "../../assets/images/delete.svg";
@@ -49,6 +50,7 @@ const DeviceDetails = () => {
 
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [showConnectedBeacons, setShowConnectedBeacons] = useState(false);
+  const [showSnoozeMode, setShowSnoozeMode] = useState(false);
 
   // Filter beacons connected to this hub
   const getConnectedBeacons = () => {
@@ -96,6 +98,28 @@ const DeviceDetails = () => {
 
   const handleBackFromBeacons = () => {
     setShowConnectedBeacons(false);
+  };
+
+  const handleSnoozeClick = () => {
+    setShowSnoozeMode(true);
+  };
+
+  const handleBackFromSnooze = () => {
+    setShowSnoozeMode(false);
+  };
+
+  const handleSnoozeStart = (endTime) => {
+    console.log("Starting snooze mode until:", endTime);
+    // Add your snooze start logic here
+    // Update deviceData.snoozeEndTime = endTime
+    setFormData({ ...formData, snoozeEndTime: endTime });
+  };
+
+  const handleSnoozeCancel = () => {
+    console.log("Cancelling snooze mode");
+    // Add your snooze cancel logic here
+    setFormData({ ...formData, snoozeEndTime: null });
+    setShowSnoozeMode(false);
   };
 
   const getDeviceType = () => {
@@ -181,6 +205,17 @@ const DeviceDetails = () => {
               beacons={getConnectedBeacons()}
               onBack={handleBackFromBeacons}
             />
+          ) : showSnoozeMode ? (
+            <SnoozeMode
+              deviceType={deviceType}
+              deviceData={{
+                ...enhancedDeviceData,
+                snoozeEndTime: formData.snoozeEndTime,
+              }}
+              onBack={handleBackFromSnooze}
+              onSnoozeStart={handleSnoozeStart}
+              onSnoozeCancel={handleSnoozeCancel}
+            />
           ) : (
             <GeneralSettings
               deviceType={deviceType}
@@ -189,6 +224,7 @@ const DeviceDetails = () => {
               onCancel={handleCancel}
               onSave={handleSave}
               onBeaconsClick={handleBeaconsClick}
+              onSnoozeClick={handleSnoozeClick}
             />
           )}
         </DeviceDetailsCard>

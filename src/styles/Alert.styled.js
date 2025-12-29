@@ -479,3 +479,63 @@ export const MapInfoWindow = styled.div`
     font-size: ${({ theme }) => theme.fontSize.xs};
   }
 `;
+
+// Styled components for custom dropdown
+export const CustomDropdown = styled.div`
+  position: relative;
+  display: inline-block;
+  margin-right: 10px;
+`;
+
+export const CustomDropdownButton = styled.div`
+  padding: 4px 32px 4px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: white;
+  cursor: pointer;
+  font-size: 14px;
+  color: #333;
+  position: relative;
+  min-width: 150px;
+
+  &::after {
+    content: "▼";
+    position: absolute;
+    right: 12px;
+    font-size: 10px;
+    color: #666;
+  }
+
+  &:hover {
+    border-color: #f7941d;
+  }
+`;
+
+export const CustomDropdownMenu = styled.div`
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 4px;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  min-width: 100%;
+`;
+
+export const CustomDropdownItem = styled.div`
+  padding: 10px 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #333;
+  background-color: ${({ $selected }) =>
+    $selected ? "#f5f5f5" : "transparent"};
+
+  &:hover {
+    background-color: #f5f5f5;
+  }
+`;

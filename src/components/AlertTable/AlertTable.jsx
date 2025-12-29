@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import PrimaryButton from "../Button/PrimaryButton";
+import NoLocationModal from "../NoLocationModal";
 import {
   TableContainer,
   TableHeader,
@@ -33,6 +34,7 @@ const AlertTable = ({
   actionButtonColor = "#007bff",
 }) => {
   const [currentPage, setCurrentPage] = React.useState(1);
+  const [showNoLocationModal, setShowNoLocationModal] = useState(false);
   const itemsPerPage = 10;
 
   // Calculate pagination
@@ -148,9 +150,18 @@ const AlertTable = ({
                       <PrimaryButton
                         size="small"
                         color={actionButtonColor}
-                        onClick={() =>
-                          onView && onView(row, startIndex + index)
-                        }
+                        onClick={() => {
+                          const hasValidLocation =
+                            row.lat &&
+                            row.lng &&
+                            row.lat !== "" &&
+                            row.lng !== "";
+                          if (!hasValidLocation) {
+                            setShowNoLocationModal(true);
+                          } else {
+                            onView && onView(row, startIndex + index);
+                          }
+                        }}
                       >
                         View
                       </PrimaryButton>
@@ -206,6 +217,11 @@ const AlertTable = ({
           </PaginationControls>
         </PaginationWrapper>
       )}
+
+      <NoLocationModal
+        isOpen={showNoLocationModal}
+        onClose={() => setShowNoLocationModal(false)}
+      />
     </TableContainer>
   );
 };

@@ -21,9 +21,11 @@ const GeneralSettings = ({
   onCancel,
   onSave,
   onBeaconsClick,
+  onSnoozeClick,
 }) => {
   const [editingField, setEditingField] = useState(null);
   const [localFormData, setLocalFormData] = useState(formData);
+  console.log("GeneralSettings render:", deviceType);
 
   const handleFieldClick = (fieldName) => {
     setEditingField(fieldName);
@@ -154,6 +156,26 @@ const GeneralSettings = ({
                   <span className="arrow">›</span>
                 </>
               )}
+            </SettingItemRight>
+          </SettingItem>
+
+          <SettingItem onClick={onSnoozeClick}>
+            <SettingItemLeft>
+              <SettingItemTitle>
+                {deviceType} Notification Snooze Mode
+              </SettingItemTitle>
+              <SettingItemSubtitle>
+                Set this {deviceType.toLowerCase()} in snooze mode
+              </SettingItemSubtitle>
+            </SettingItemLeft>
+            <SettingItemRight>
+              <>
+                {localFormData.snoozeEndTime !== null &&
+                localFormData.snoozeEndTime !== ""
+                  ? "On"
+                  : "Off"}
+                <span className="arrow">›</span>
+              </>
             </SettingItemRight>
           </SettingItem>
 

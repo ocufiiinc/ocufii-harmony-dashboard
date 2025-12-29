@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { AlertItem } from "../../styles/Dashboard.styled";
 import phonePng from "../../assets/images/phone.png";
 import safetyCardPng from "../../assets/images/safety_card.png";
 import { formatDateTime } from "../../utility/TimeFormat";
 import { getSafetyAlertIcon } from "../../utility/DeviceMapping";
+import NoLocationModal from "../NoLocationModal";
 
 const SafetyAlertItem = ({
   alert,
@@ -14,8 +15,20 @@ const SafetyAlertItem = ({
   showRecipients,
   showEmergencyServices,
 }) => {
+  const [showNoLocationModal, setShowNoLocationModal] = useState(false);
   const iconData = getSafetyAlertIcon(alert.notificationReason);
   const IconComponent = iconData.Component;
+
+  const hasValidLocation =
+    alert.lat && alert.lng && alert.lat !== "" && alert.lng !== "";
+
+  const handleViewClick = (callback) => {
+    if (!hasValidLocation) {
+      setShowNoLocationModal(true);
+    } else {
+      callback && callback(alert);
+    }
+  };
 
   return (
     <AlertItem $isSelected={isSelected}>
@@ -60,7 +73,7 @@ const SafetyAlertItem = ({
           className="see-recipients-button"
           onClick={(e) => {
             e.stopPropagation();
-            onSeeRecipients && onSeeRecipients(alert);
+            handleViewClick(onSeeRecipients);
           }}
           style={
             showRecipients
@@ -78,7 +91,7 @@ const SafetyAlertItem = ({
           className="emergency-services-button"
           onClick={(e) => {
             e.stopPropagation();
-            onView(alert);
+            handleViewClick(onView);
           }}
           style={
             showEmergencyServices
@@ -102,6 +115,11 @@ const SafetyAlertItem = ({
       >
         Alert Action
       </button>
+
+      <NoLocationModal
+        isOpen={showNoLocationModal}
+        onClose={() => setShowNoLocationModal(false)}
+      />
     </AlertItem>
   );
 };
