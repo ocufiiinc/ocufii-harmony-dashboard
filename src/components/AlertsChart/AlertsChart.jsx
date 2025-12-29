@@ -70,7 +70,7 @@ const AlertsChart = () => {
     // Generate labels based on date range
     const now = moment();
     const daysCount =
-      selectedRange === "today"
+      selectedRange === "24hours"
         ? 1
         : selectedRange === "7days"
         ? 7
@@ -89,7 +89,7 @@ const AlertsChart = () => {
       const filteredAlerts = alerts.filter((alert) => {
         const alertDate = moment(alert.duration);
         switch (selectedRange) {
-          case "today":
+          case "24hours":
             return alertDate.isSame(now, "day");
           case "7days":
             return alertDate.isAfter(now.clone().subtract(7, "days"));
