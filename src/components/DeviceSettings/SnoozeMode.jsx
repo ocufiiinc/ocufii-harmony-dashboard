@@ -5,6 +5,8 @@ import {
   SectionTitle,
 } from "../../styles/DeviceDetails.styled";
 import checkImg from "../../assets/images/check-badge.svg";
+import { useUser } from "../../context/UserContext";
+import { setSnooze } from "../../api/BeaconApi";
 
 import {
   SnoozeContainer,
@@ -36,6 +38,7 @@ const SnoozeMode = ({
 
   const hours = Array.from({ length: 24 }, (_, i) => i);
   const minutes = Array.from({ length: 60 }, (_, i) => i);
+  const { user } = useUser();
 
   console.log("Device Data:", deviceData);
 
@@ -89,11 +92,23 @@ const SnoozeMode = ({
     }
   }, []);
 
-  const handleStartSnooze = () => {
-    const snoozeEndTime = new Date();
-    snoozeEndTime.setHours(snoozeEndTime.getHours() + selectedHours);
-    snoozeEndTime.setMinutes(snoozeEndTime.getMinutes() + selectedMinutes);
-    onSnoozeStart(snoozeEndTime.toISOString());
+  const handleStartSnooze = async () => {
+    try {
+      // Call the setSnooze API
+      const response = await setSnooze(
+        user?.email,
+        deviceData?.macAddress || deviceData?.address,
+        selectedHours,
+        selectedMinutes
+      );
+
+      // Use the snoozeTimeStampEnd from API response
+      if (response?.snoozeSettings?.snoozeTimeStampEnd) {
+        onSnoozeStart(response.snoozeSettings.snoozeTimeStampEnd);
+      }
+    } catch (error) {
+      console.error("Error starting snooze:", error);
+    }
   };
 
   const handleCancelSnooze = () => {
