@@ -6,8 +6,11 @@ import {
 } from "../../styles/DeviceDetails.styled";
 import checkImg from "../../assets/images/check-badge.svg";
 import alarmImg from "../../assets/images/alarm-bell-sleep-1.svg";
+import cancelImg from "../../assets/images/button-refresh-arrow.svg";
 import { useUser } from "../../context/UserContext";
-import { setSnooze } from "../../api/BeaconApi";
+import { setSnooze, stopSnooze } from "../../api/BeaconApi";
+import moment from "moment";
+import { useQueryClient } from "@tanstack/react-query";
 
 import {
   SnoozeContainer,
@@ -40,8 +43,7 @@ const SnoozeMode = ({ deviceType, deviceData, onBack }) => {
   const hours = Array.from({ length: 24 }, (_, i) => i);
   const minutes = Array.from({ length: 60 }, (_, i) => i);
   const { user } = useUser();
-
-  console.log("Device Data:", deviceData);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     if (isSnoozed) {
@@ -54,18 +56,20 @@ const SnoozeMode = ({ deviceType, deviceData, onBack }) => {
   const calculateRemainingTime = () => {
     if (!snoozeEndTime) return;
 
-    const now = new Date();
-    const endTime = new Date(snoozeEndTime);
-    const diff = endTime - now;
+    const now = moment();
+    const endTime = moment.utc(snoozeEndTime).local();
+    const diff = endTime.diff(now);
 
     if (diff <= 0) {
       setRemainingTime({ hours: 0, minutes: 0 });
+      setIsSnoozed(false);
+      setSnoozeEndTime(null);
       return;
     }
 
-    const totalMinutes = Math.floor(diff / 60000);
-    const hrs = Math.floor(totalMinutes / 60);
-    const mins = totalMinutes % 60;
+    const duration = moment.duration(diff);
+    const hrs = Math.floor(duration.asHours());
+    const mins = duration.minutes();
 
     setRemainingTime({ hours: hrs, minutes: mins });
   };
@@ -105,13 +109,32 @@ const SnoozeMode = ({ deviceType, deviceData, onBack }) => {
       if (response?.snoozeSettings?.snoozeTimeStampEnd) {
         setSnoozeEndTime(response.snoozeSettings.snoozeTimeStampEnd);
         setIsSnoozed(true);
+        // Invalidate devices query to refetch updated data
+        queryClient.invalidateQueries({ queryKey: ["devices", user?.email] });
       }
     } catch (error) {
       console.error("Error starting snooze:", error);
     }
   };
 
-  const handleCancelSnooze = () => {};
+  const handleCancelSnooze = async () => {
+    try {
+      const response = await stopSnooze(
+        user?.email,
+        deviceData?.macAddress || deviceData?.address
+      );
+
+      if (response?.status === 200) {
+        setIsSnoozed(false);
+        setSnoozeEndTime(null);
+        setRemainingTime(null);
+        // Invalidate devices query to refetch updated data
+        queryClient.invalidateQueries({ queryKey: ["devices", user?.email] });
+      }
+    } catch (error) {
+      console.error("Error cancelling snooze:", error);
+    }
+  };
 
   return (
     <RightSection>
@@ -153,27 +176,13 @@ const SnoozeMode = ({ deviceType, deviceData, onBack }) => {
             <SnoozeButtons>
               <BackButton onClick={onBack}>Back</BackButton>
               <SnoozeActionButton cancel onClick={handleCancelSnooze}>
-                <svg
+                <img
+                  src={cancelImg}
+                  alt="cancel"
                   width="16"
                   height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  style={{ marginRight: "8px" }}
-                >
-                  <circle
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                  />
-                  <path
-                    d="M15 9L9 15M9 9L15 15"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                  />
-                </svg>
+                  style={{ marginRight: "8px", color: "#fff" }}
+                />
                 Cancel Snooze Mode
               </SnoozeActionButton>
             </SnoozeButtons>

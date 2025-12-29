@@ -27,3 +27,26 @@ export const setSnooze = async (email, beaconMAC, hours, minutes) => {
     throw error;
   }
 };
+
+export const stopSnooze = async (email, beaconMAC) => {
+  try {
+    const response = await api.post(APIROUTES.STOP_SNOOZE, {
+      email,
+      beaconMAC,
+    });
+    console.log("Stop snooze response:", response.data);
+    if (response.data.status == 200) {
+      Toast.success(
+        response.data.message || "Snooze mode cancelled successfully"
+      );
+      return response.data;
+    } else {
+      Toast.error(response.data.message || "Failed to cancel snooze mode");
+      return null;
+    }
+  } catch (error) {
+    console.error("Error stopping snooze:", error);
+    Toast.error("Failed to cancel snooze mode");
+    throw error;
+  }
+};

@@ -19,4 +19,5 @@ export const APIROUTES = {
   GET_OVERVIEW_STATS: (email) => `/Dashboard/GetOverview?email=${email}`,
   SEND_MESSAGE_TO_VICTIM: "/Dashboard/SendMessageToVictim",
   SET_SNOOZE: "/Dashboard/devices/snooze/start",
+  STOP_SNOOZE: "/Dashboard/devices/snooze/stop",
 };
