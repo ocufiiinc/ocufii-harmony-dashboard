@@ -1,5 +1,6 @@
 import api from "../common/ConfigAxios";
 import { APIROUTES } from "../common/ApiRoutes";
+import Toast from "../utility/Toast";
 
 export const setSnooze = async (email, beaconMAC, hours, minutes) => {
   try {

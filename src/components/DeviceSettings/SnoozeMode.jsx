@@ -5,6 +5,7 @@ import {
   SectionTitle,
 } from "../../styles/DeviceDetails.styled";
 import checkImg from "../../assets/images/check-badge.svg";
+import alarmImg from "../../assets/images/alarm-bell-sleep-1.svg";
 import { useUser } from "../../context/UserContext";
 import { setSnooze } from "../../api/BeaconApi";
 
@@ -23,16 +24,16 @@ import {
   TimePickerLabel,
 } from "../../styles/SnoozeMode.styled";
 
-const SnoozeMode = ({
-  deviceType,
-  deviceData,
-  onBack,
-  onSnoozeStart,
-  onSnoozeCancel,
-}) => {
+const SnoozeMode = ({ deviceType, deviceData, onBack }) => {
   const [selectedHours, setSelectedHours] = useState(8);
   const [selectedMinutes, setSelectedMinutes] = useState(0);
   const [remainingTime, setRemainingTime] = useState(null);
+  const [snoozeEndTime, setSnoozeEndTime] = useState(
+    deviceData.snoozeEndTime || null
+  );
+  const [isSnoozed, setIsSnoozed] = useState(
+    deviceData.snoozeEndTime && deviceData.snoozeEndTime !== ""
+  );
   const hoursRef = useRef(null);
   const minutesRef = useRef(null);
 
@@ -42,22 +43,19 @@ const SnoozeMode = ({
 
   console.log("Device Data:", deviceData);
 
-  // Check if device is currently snoozed
-  const isSnoozed = deviceData.snoozeEndTime && deviceData.snoozeEndTime !== "";
-
   useEffect(() => {
     if (isSnoozed) {
       calculateRemainingTime();
       const interval = setInterval(calculateRemainingTime, 60000); // Update every minute
       return () => clearInterval(interval);
     }
-  }, [isSnoozed, deviceData.snoozeEndTime]);
+  }, [isSnoozed, snoozeEndTime]);
 
   const calculateRemainingTime = () => {
-    if (!deviceData.snoozeEndTime) return;
+    if (!snoozeEndTime) return;
 
     const now = new Date();
-    const endTime = new Date(deviceData.snoozeEndTime);
+    const endTime = new Date(snoozeEndTime);
     const diff = endTime - now;
 
     if (diff <= 0) {
@@ -102,18 +100,18 @@ const SnoozeMode = ({
         selectedMinutes
       );
 
+      console.log("Snooze started:", response);
       // Use the snoozeTimeStampEnd from API response
       if (response?.snoozeSettings?.snoozeTimeStampEnd) {
-        onSnoozeStart(response.snoozeSettings.snoozeTimeStampEnd);
+        setSnoozeEndTime(response.snoozeSettings.snoozeTimeStampEnd);
+        setIsSnoozed(true);
       }
     } catch (error) {
       console.error("Error starting snooze:", error);
     }
   };
 
-  const handleCancelSnooze = () => {
-    onSnoozeCancel();
-  };
+  const handleCancelSnooze = () => {};
 
   return (
     <RightSection>
@@ -135,56 +133,20 @@ const SnoozeMode = ({
               </p>
               <SnoozeCard>
                 <SnoozeIcon>
-                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
-                    <path
-                      d="M12 22C10.3431 22 9 20.6569 9 19V15C9 13.3431 10.3431 12 12 12C13.6569 12 15 13.3431 15 15V19C15 20.6569 13.6569 22 12 22Z"
-                      stroke="#FF9800"
-                      strokeWidth="2"
-                    />
-                    <path
-                      d="M9 9L15 9"
-                      stroke="#FF9800"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                    />
-                    <path
-                      d="M12 2L12 6"
-                      stroke="#FF9800"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                    />
-                    <path
-                      d="M17 4L19 6"
-                      stroke="#FF9800"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                    />
-                    <path
-                      d="M5 6L7 4"
-                      stroke="#FF9800"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                    />
-                    <path
-                      d="M18 15C18 15 19 15.5 19 17C19 18.5 18 19 18 19"
-                      stroke="#FF9800"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                    />
-                    <path
-                      d="M6 15C6 15 5 15.5 5 17C5 18.5 6 19 6 19"
-                      stroke="#FF9800"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                    />
-                  </svg>
+                  <img
+                    src={alarmImg}
+                    alt="alarm"
+                    width="48"
+                    height="48"
+                    style={{ display: "block" }}
+                  />
                 </SnoozeIcon>
                 <SnoozeTime>
                   {remainingTime
                     ? `${remainingTime.hours} Hrs ${remainingTime.minutes} Minutes Remaining`
                     : "Calculating..."}
                 </SnoozeTime>
-                <SnoozeSubtitle>*Tag "1" Is Snoozed</SnoozeSubtitle>
+                <SnoozeSubtitle>*{deviceData.name} Is Snoozed</SnoozeSubtitle>
               </SnoozeCard>
             </SnoozeContainer>
 

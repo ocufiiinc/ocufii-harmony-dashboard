@@ -108,20 +108,6 @@ const DeviceDetails = () => {
     setShowSnoozeMode(false);
   };
 
-  const handleSnoozeStart = (endTime) => {
-    console.log("Starting snooze mode until:", endTime);
-    // Add your snooze start logic here
-    // Update deviceData.snoozeEndTime = endTime
-    setFormData({ ...formData, snoozeEndTime: endTime });
-  };
-
-  const handleSnoozeCancel = () => {
-    console.log("Cancelling snooze mode");
-    // Add your snooze cancel logic here
-    setFormData({ ...formData, snoozeEndTime: null });
-    setShowSnoozeMode(false);
-  };
-
   const getDeviceType = () => {
     if (deviceData.hub) return "Hub";
     if (deviceData.beacon) return "Beacon";
@@ -213,8 +199,6 @@ const DeviceDetails = () => {
                 snoozeEndTime: formData.snoozeEndTime,
               }}
               onBack={handleBackFromSnooze}
-              onSnoozeStart={handleSnoozeStart}
-              onSnoozeCancel={handleSnoozeCancel}
             />
           ) : (
             <GeneralSettings
