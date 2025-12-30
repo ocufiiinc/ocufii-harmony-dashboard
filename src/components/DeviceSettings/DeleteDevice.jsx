@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import {
   RightSection,
   DeleteConfirmationContainer,
@@ -14,6 +14,21 @@ import warningIcon from "../../assets/images/warning.svg";
 import deleteIcon from "../../assets/images/delete.svg";
 
 const DeleteDevice = ({ deviceType, deviceName, onCancel, onConfirm }) => {
+  const message = useMemo(() => {
+    switch ((deviceType || "").toLowerCase()) {
+      case "hub":
+        return `Once deleted, associated beacons will no longer be able to communicate, and you will stop receiving notifications from them.`;
+      case "beacon":
+        return `Once deleted, you will stop receiving notifications fom this beacon.`;
+      case "lock":
+        return `Once deleted, you will stop receiving notifications fom this lock.`;
+      case "card":
+        return `Once deleted, you will stop receiving notifications fom this safety card.`;
+      default:
+        return `Once deleted, you will stop receiving notifications fom this flexiband.`;
+    }
+  }, [deviceType]);
+
   return (
     <RightSection>
       <DeleteConfirmationContainer>
@@ -26,10 +41,7 @@ const DeleteDevice = ({ deviceType, deviceName, onCancel, onConfirm }) => {
           ACCOUNT
         </DeleteConfirmationTitle>
 
-        <DeleteConfirmationText>
-          Once deleted, associated beacons will no longer be able to
-          communicate, and you will stop receiving notifications from them.
-        </DeleteConfirmationText>
+        <DeleteConfirmationText>{message}</DeleteConfirmationText>
 
         <DeleteConfirmationQuestion>
           Are you sure you want to proceed with deleting this {deviceType}?

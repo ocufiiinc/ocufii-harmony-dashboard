@@ -6,6 +6,7 @@ import GeneralSettings from "../../components/DeviceSettings/GeneralSettings";
 import DeleteDevice from "../../components/DeviceSettings/DeleteDevice";
 import ConnectedBeacons from "../../components/DeviceSettings/ConnectedBeacons";
 import SnoozeMode from "../../components/DeviceSettings/SnoozeMode";
+import TwoFactor from "../email/TwoFactor";
 import { useUser } from "../../context/UserContext";
 import { getAllDevices } from "../../api/DevicesApi";
 import deleteIcon from "../../assets/images/delete.svg";
@@ -51,6 +52,7 @@ const DeviceDetails = () => {
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [showConnectedBeacons, setShowConnectedBeacons] = useState(false);
   const [showSnoozeMode, setShowSnoozeMode] = useState(false);
+  const [showTwoFactor, setShowTwoFactor] = useState(true);
 
   // Filter beacons connected to this hub
   const getConnectedBeacons = () => {
@@ -88,8 +90,14 @@ const DeviceDetails = () => {
 
   const handleConfirmDelete = () => {
     console.log("Deleting device:", formData.name);
-    // Add your delete logic here
-    navigate(-1);
+    setShowDeleteConfirmation(false);
+    setShowTwoFactor(true);
+  };
+
+  const handleTwoFactorSuccess = () => {
+    console.log("Device deleted successfully after verification");
+    // Add your actual delete API call here
+    setShowTwoFactor(false);
   };
 
   const handleBeaconsClick = () => {
@@ -179,7 +187,15 @@ const DeviceDetails = () => {
           </LeftSection>
 
           {/* Right Section - General Settings or Delete Confirmation */}
-          {showDeleteConfirmation ? (
+          {console.log("show two factor", showTwoFactor)}
+          {showTwoFactor ? (
+            <TwoFactor
+              deviceType={deviceType}
+              deviceName={formData.name}
+              onCancel={() => setShowTwoFactor(false)}
+              onSuccess={handleTwoFactorSuccess}
+            />
+          ) : showDeleteConfirmation ? (
             <DeleteDevice
               deviceType={deviceType}
               deviceName={formData.name}
