@@ -29,11 +29,15 @@ import {
 } from "../styles/SafetyNetwork.styled";
 import sendEmail from "../assets/images/sendEmail.png";
 import receiveEmail from "../assets/images/recieveEmail.png";
+import deleteImg from "../assets/images/delete.svg";
 import { ROUTE } from "../common/Routes";
+import DeleteMemberModal from "../components/DeleteMemberModal/DeleteMemberModal";
 
 const SafetyNetwork = () => {
   const navigate = useNavigate();
   const [openAccordion, setOpenAccordion] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedMember, setSelectedMember] = useState(null);
 
   // Sample data - replace with API call later
   const [members, setMembers] = useState([
@@ -58,8 +62,20 @@ const SafetyNetwork = () => {
   };
 
   const handleDelete = (id) => {
-    // Add delete functionality later
-    console.log("Delete member:", id);
+    const member = members.find((m) => m.id === id);
+    setSelectedMember(member);
+    setShowDeleteModal(true);
+  };
+
+  const handleConfirmDelete = (id) => {
+    setMembers((prev) => prev.filter((m) => m.id !== id));
+    setSelectedMember(null);
+    setShowDeleteModal(false);
+  };
+
+  const handleCloseDelete = () => {
+    setSelectedMember(null);
+    setShowDeleteModal(false);
   };
 
   return (
@@ -67,7 +83,12 @@ const SafetyNetwork = () => {
       <DashboardContent>
         <SafetyNetworkContainer>
           <PageTitle>My Safety Network</PageTitle>
-
+          <DeleteMemberModal
+            isOpen={showDeleteModal}
+            member={selectedMember}
+            onClose={handleCloseDelete}
+            onConfirm={handleConfirmDelete}
+          />
           <ButtonGroup>
             <ActionButton onClick={handleInvite}>
               <img src={sendEmail} alt="Send Email" />
@@ -113,7 +134,15 @@ const SafetyNetwork = () => {
                     </MemberLeft>
                     <MemberRight>
                       <DeleteButton onClick={() => handleDelete(member.id)}>
-                        <MdDelete />
+                        <img
+                          src={deleteImg}
+                          alt="delete"
+                          style={{
+                            width: 20,
+                            height: 20,
+                            objectFit: "contain",
+                          }}
+                        />
                       </DeleteButton>
                     </MemberRight>
                   </MemberHeader>

@@ -52,7 +52,7 @@ const DeviceDetails = () => {
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [showConnectedBeacons, setShowConnectedBeacons] = useState(false);
   const [showSnoozeMode, setShowSnoozeMode] = useState(false);
-  const [showTwoFactor, setShowTwoFactor] = useState(true);
+  const [showTwoFactor, setShowTwoFactor] = useState(false);
 
   // Filter beacons connected to this hub
   const getConnectedBeacons = () => {
