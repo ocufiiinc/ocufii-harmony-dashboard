@@ -49,7 +49,7 @@ const Alerts = () => {
     queryFn: () =>
       getDashboard(user?.email || "", 1000, dateRangeMap[selectedFilter]),
     enabled: !!user?.email,
-    refetchInterval: 30000, // Refetch every 30 seconds
+    refetchInterval: 5000, // Refetch every 5 seconds
   });
 
   // Transform API data to table format (with acknowledge filter)

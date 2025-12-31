@@ -126,7 +126,7 @@ const Dashboard = () => {
     queryKey: ["dashboard", user?.email],
     queryFn: () => getDashboard(user?.email || ""),
     enabled: !!user?.email, // Only run query if user email exists
-    refetchInterval: 30000, // Refetch every 30 seconds
+    refetchInterval: 5000, // Refetch every 5 seconds
   });
 
   // Use API data if available, otherwise fall back to example data

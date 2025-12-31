@@ -32,6 +32,7 @@ import receiveEmail from "../assets/images/recieveEmail.png";
 import deleteImg from "../assets/images/delete.svg";
 import { ROUTE } from "../common/Routes";
 import DeleteMemberModal from "../components/DeleteMemberModal/DeleteMemberModal";
+import MemberDetails from "../components/MemberDetails";
 
 const SafetyNetwork = () => {
   const navigate = useNavigate();
@@ -148,8 +149,15 @@ const SafetyNetwork = () => {
                   </MemberHeader>
                   <AccordionContent $isOpen={openAccordion === member.id}>
                     <AccordionBody>
-                      {/* Accordion content will be added later */}
-                      <p>Member details will go here...</p>
+                      <MemberDetails
+                        member={member}
+                        onUnlink={() => {
+                          // simple unlink => remove or perform unlink action
+                          setMembers((prev) =>
+                            prev.filter((m) => m.id !== member.id)
+                          );
+                        }}
+                      />
                     </AccordionBody>
                   </AccordionContent>
                 </MemberItem>
