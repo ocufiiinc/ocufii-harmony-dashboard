@@ -74,8 +74,7 @@ const AlertStats = ({ timeRange }) => {
       return getAlertSummary(user?.email, startDateTime, endDateTime);
     },
     enabled: !!user?.email,
-    refetchInterval: 120000, // Refetch every 2 minutes
-    staleTime: 60000, // Cache for 1 minute
+    refetchInterval: 5000, // Refetch every 5 seconds
   });
 
   // Use API data if available
