@@ -54,7 +54,7 @@ export const DeviceHealthContainer = styled.div`
 
 export const DeviceHealthHeader = styled.h3`
   font-size: 20px;
-  font-weight: 600;
+  font-weight: 500;
   color: ${(props) => props.theme.colors.textPrimary};
   margin-bottom: 20px;
   font-family: "Decimal", sans-serif;
@@ -238,7 +238,7 @@ export const AlertSummaryHeader = styled.div`
 
   h3 {
     font-size: 20px;
-    font-weight: 600;
+    font-weight: 500;
     color: ${(props) => props.theme.colors.textPrimary};
     margin: 0;
     font-family: "Decimal", sans-serif;

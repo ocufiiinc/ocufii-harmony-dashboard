@@ -93,7 +93,7 @@ const AlertDetails = () => {
 
     try {
       await pingRecipients(user?.email, selectedAlert.id);
-      Toast.success("Safety network pinged successfully");
+      // Toast.success("Safety network pinged successfully");
 
       setTimer(20);
 

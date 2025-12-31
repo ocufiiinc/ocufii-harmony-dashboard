@@ -162,7 +162,7 @@ const Dashboard = () => {
     try {
       // Call ping recipients API
       await pingRecipients(user?.email, alert.id);
-      Toast.success("Safety network pinged successfully");
+      // Toast.success("Safety network pinged successfully");
 
       // Start 20 second timer
       setTimer(20);
