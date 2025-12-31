@@ -125,7 +125,7 @@ const Dashboard = () => {
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["dashboard", user?.email],
     queryFn: () => getDashboard(user?.email || ""),
-    enabled: !!user?.email, // Only run query if user email exists
+    enabled: !!user?.email && !alertActionAlert, // Only run query if user email exists and modal is not open
     refetchInterval: 5000, // Refetch every 5 seconds
   });
 

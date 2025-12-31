@@ -75,7 +75,7 @@ export const StatsHeaderContent = styled.div`
 
 export const StatsLabel = styled.div`
   font-size: ${({ theme }) => theme.fontSize.md};
-  font-weight: ${({ theme }) => theme.fontWeight.medium};
+  font-weight: ${({ theme }) => theme.fontWeight.sm};
   color: ${({ theme }) => theme.colors.textPrimary};
 
   @media (max-width: 1440px) {
