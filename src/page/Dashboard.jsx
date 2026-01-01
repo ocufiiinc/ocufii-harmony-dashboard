@@ -56,7 +56,6 @@ const Dashboard = () => {
   const [isLoadingRecipients, setIsLoadingRecipients] = useState(false);
   const [shouldFetchLocations, setShouldFetchLocations] = useState(false);
   const [currentNotificationId, setCurrentNotificationId] = useState(null);
-  const [shouldPollStatus, setShouldPollStatus] = useState(false);
   const [timeRange, setTimeRange] = useState("24 Hours");
   const [alertActionAlert, setAlertActionAlert] = useState(null);
   const timerRef = useRef(null);
@@ -74,19 +73,6 @@ const Dashboard = () => {
     enabled: false, // Don't fetch automatically
     staleTime: 0, // Always fetch fresh data
     cacheTime: 0, // Don't cache
-  });
-
-  // TanStack Query for polling assist request status
-  const { data: assistStatusData } = useQuery({
-    queryKey: ["assistRequestStatus", currentNotificationId],
-    queryFn: () => {
-      console.log("Polling assist request status for:", currentNotificationId);
-      return getAssistRequestStatus(currentNotificationId);
-    },
-    enabled: shouldPollStatus && !!currentNotificationId,
-    refetchInterval: shouldPollStatus ? 30000 : false,
-    refetchIntervalInBackground: true,
-    staleTime: 0,
   });
 
   // TanStack Query for alert summary with dynamic time range
@@ -254,7 +240,6 @@ const Dashboard = () => {
     setTimer(0);
     setIsLoadingRecipients(false);
     setCurrentNotificationId(null);
-    setShouldPollStatus(false);
 
     // Clear timers
     if (timerRef.current) clearInterval(timerRef.current);
@@ -393,9 +378,6 @@ const Dashboard = () => {
                       showRecipients={showRecipients}
                       showEmergencyServices={showEmergencyServices}
                       isLoadingRecipients={isLoadingRecipients}
-                      assistStatusData={assistStatusData}
-                      onTriggerPolling={() => setShouldPollStatus(true)}
-                      onStopPolling={() => setShouldPollStatus(false)}
                       onUpdateRecipientStatus={handleUpdateRecipientStatus}
                     />
                   </div>

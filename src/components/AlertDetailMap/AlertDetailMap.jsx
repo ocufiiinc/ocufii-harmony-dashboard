@@ -1,4 +1,5 @@
 import React, { useRef, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import ReactDOM from "react-dom/client";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
@@ -34,9 +35,6 @@ const AlertDetailMap = ({
   showRecipients,
   showEmergencyServices,
   isLoadingRecipients,
-  assistStatusData,
-  onTriggerPolling,
-  onStopPolling,
   onUpdateRecipientStatus,
 }) => {
   const mapContainer = useRef(null);
@@ -47,6 +45,66 @@ const AlertDetailMap = ({
   const displayedRecipientsRef = useRef(null); // Track if recipients have been displayed for this alert
   const addressCache = useRef({}); // Cache for geocoded addresses
   const recipientPopupsRef = useRef({}); // Store popup references by email
+  const [shouldPollStatus, setShouldPollStatus] = React.useState(false);
+  const previousAssistStatusRef = useRef(null); // Track previous assist status data
+  const previousAlertsRef = useRef(null); // Track previous alerts data
+
+  // LocalStorage key for assist message responses
+  const ASSIST_MESSAGES_KEY = "ocufii_assist_messages";
+
+  // TanStack Query for polling assist request status
+  const { data: assistStatusData } = useQuery({
+    queryKey: ["assistRequestStatus", selectedAlert?.id],
+    queryFn: () => {
+      console.log("Polling assist request status for:", selectedAlert?.id);
+      return getAssistRequestStatus(selectedAlert?.id);
+    },
+    enabled: shouldPollStatus && !!selectedAlert?.id,
+    refetchInterval: shouldPollStatus ? 30000 : false,
+    refetchIntervalInBackground: true,
+    staleTime: 0,
+  });
+
+  // Save assist message API response to localStorage
+  const saveAssistMessageResponse = (notificationId, helperEmail, response) => {
+    try {
+      const stored = localStorage.getItem(ASSIST_MESSAGES_KEY);
+      const assistMessages = stored ? JSON.parse(stored) : {};
+
+      if (!assistMessages[notificationId]) {
+        assistMessages[notificationId] = {};
+      }
+
+      assistMessages[notificationId][helperEmail] = {
+        ...response,
+        assistStatus: "Pending", // Add assist status field
+        timestamp: new Date().toISOString(),
+      };
+
+      localStorage.setItem(ASSIST_MESSAGES_KEY, JSON.stringify(assistMessages));
+      console.log("Saved assist message response to localStorage:", {
+        notificationId,
+        helperEmail,
+        response,
+      });
+    } catch (error) {
+      console.error("Error saving assist message response:", error);
+    }
+  };
+
+  // Get assist message response from localStorage
+  const getAssistMessageResponse = (notificationId, helperEmail) => {
+    try {
+      const stored = localStorage.getItem(ASSIST_MESSAGES_KEY);
+      if (!stored) return null;
+
+      const assistMessages = JSON.parse(stored);
+      return assistMessages[notificationId]?.[helperEmail] || null;
+    } catch (error) {
+      console.error("Error reading assist message response:", error);
+      return null;
+    }
+  };
 
   // Function to fetch address from Mapbox Geocoding API
   const getAddressFromCoordinates = async (lng, lat) => {
@@ -76,12 +134,111 @@ const AlertDetailMap = ({
     }
   };
 
+  // Restore eventIds from localStorage when recipients are loaded and check for pending requests
+  useEffect(() => {
+    if (
+      !selectedAlert ||
+      !selectedAlert.recipients ||
+      selectedAlert.recipients.length === 0
+    )
+      return;
+
+    let hasPendingRequests = false;
+
+    console.log(
+      "Checking localStorage for pending requests...",
+      selectedAlert.recipients.length,
+      "recipients"
+    );
+
+    // Check localStorage for saved eventIds for this alert
+    selectedAlert.recipients.forEach((recipient) => {
+      const storedResponse = getAssistMessageResponse(
+        selectedAlert.id,
+        recipient.email
+      );
+
+      // Check if we have a stored response with eventId (which means a message was sent)
+      if (storedResponse) {
+        // Extract eventId from results array or direct property
+        let eventId = storedResponse.eventId;
+        if (
+          !eventId &&
+          storedResponse.results &&
+          storedResponse.results.length > 0
+        ) {
+          eventId = storedResponse.results[0].eventId;
+        }
+
+        if (eventId) {
+          recipientEventIdsRef.current[recipient.email] = eventId;
+          console.log(
+            `Restored eventId for ${recipient.email} from localStorage:`,
+            eventId
+          );
+
+          // If assistStatus is Pending or not yet resolved, we need to check status
+          if (
+            storedResponse.assistStatus === "Pending" ||
+            !storedResponse.assistStatus
+          ) {
+            hasPendingRequests = true;
+            console.log(`Found pending request for ${recipient.email}`);
+          }
+        }
+      }
+    });
+
+    // If there are pending requests, make immediate API call and start polling
+    if (hasPendingRequests) {
+      console.log(
+        "Found pending requests in localStorage, checking status for alert:",
+        selectedAlert.id
+      );
+
+      // Make immediate API call to get current status
+      getAssistRequestStatus(selectedAlert.id)
+        .then((response) => {
+          console.log("Initial status check response:", response);
+          // The response will be handled by the assistStatusData useEffect below
+          // Now start polling
+          setShouldPollStatus(true);
+        })
+        .catch((error) => {
+          console.error("Error checking assist request status:", error);
+        });
+    }
+  }, [selectedAlert?.id, selectedAlert?.recipients?.length]);
+
   // Handle assist request status updates from TanStack Query
   useEffect(() => {
     if (assistStatusData && assistStatusData.requests) {
+      console.log(
+        "[Assist Status Update] New data received:",
+        assistStatusData
+      );
+
+      // Compare with previous data to prevent duplicate processing
+      const currentDataString = JSON.stringify(assistStatusData.requests);
+      const previousDataString = previousAssistStatusRef.current;
+
+      if (currentDataString === previousDataString) {
+        console.log("[Assist Status Update] Data unchanged, skipping update");
+        return;
+      }
+
+      console.log("[Assist Status Update] Data changed, processing updates");
+      previousAssistStatusRef.current = currentDataString;
+
       let hasAccepted = false;
 
       assistStatusData.requests.forEach((recipientRequest) => {
+        console.log(
+          "[Button Update] Processing recipient:",
+          recipientRequest.helperEmail,
+          "Status:",
+          recipientRequest.status
+        );
         // Store the eventId for later use
         recipientEventIdsRef.current[recipientRequest.helperEmail] =
           recipientRequest.eventId;
@@ -125,27 +282,45 @@ const AlertDetailMap = ({
           if (status === "Pending") {
             statusHTML = `
               <div id="status-${sanitizedEmail}" style="padding: 8px 12px; background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%); color: white; border-radius: 6px; font-size: 12px; font-weight: 450; text-align: center; margin-bottom: 8px; width: 100%;">
-                ⏳ Pending Response
+                 Pending Response
               </div>
             `;
           } else if (status === "Accepted") {
             statusHTML = `
               <div id="status-${sanitizedEmail}" style="padding: 8px 12px; background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; border-radius: 6px; font-size: 12px; font-weight: 450; text-align: center; margin-bottom: 8px; width: 100%;">
-                ✓ Request Accepted
+                 Request Accepted
               </div>
             `;
           } else if (status === "Declined" || status === "Rejected") {
             statusHTML = `
               <div id="status-${sanitizedEmail}" style="padding: 8px 12px; background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); color: white; border-radius: 6px; font-size: 12px; font-weight: 450; text-align: center; margin-bottom: 8px; width: 100%;">
-                ✗ Request Declined
+                 Request Declined
               </div>
             `;
           }
 
           statusDiv.outerHTML = statusHTML;
 
+          // Check if route buttons already exist - if so, skip button logic entirely
+          const existingRouteButtons = popupEl?.querySelector(
+            `.route-buttons-${recipientId}`
+          );
+
+          console.log(
+            "[Button Check] Recipient:",
+            recipientRequest.helperEmail,
+            "Existing buttons:",
+            !!existingRouteButtons,
+            "Status:",
+            status
+          );
+
           // Handle buttons based on status
-          if (status === "Accepted") {
+          if (status === "Accepted" && !existingRouteButtons) {
+            console.log(
+              "[Button Insert] Adding route buttons for:",
+              recipientRequest.helperEmail
+            );
             // Get recipient data from selectedAlert
             const recipient = selectedAlert.recipients?.find(
               (r) => r.email === recipientRequest.helperEmail
@@ -183,7 +358,7 @@ const AlertDetailMap = ({
             );
 
             const routeButtonsHTML = `
-              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
+              <div class="route-buttons-${recipientId}" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
                 <button 
                   onclick="window['showRoute_${recipientId}']()"
                   style="padding: 10px; background: linear-gradient(135deg, #007cbf 0%, #0099ff 100%); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 450; cursor: pointer; font-family: 'Decimal', sans-serif; box-shadow: 0 2px 4px rgba(0,0,0,0.2); transition: all 0.3s ease;"
@@ -211,11 +386,7 @@ const AlertDetailMap = ({
               const newStatusDiv = document.getElementById(
                 `status-${sanitizedEmail}`
               );
-              // Check if route buttons already exist to prevent duplicates
-              const existingRouteButtons = popupEl?.querySelector(
-                `button[onclick*="showRoute_${recipientId}"]`
-              );
-              if (newStatusDiv && !existingRouteButtons) {
+              if (newStatusDiv) {
                 newStatusDiv.insertAdjacentHTML("afterend", routeButtonsHTML);
               }
             }
@@ -267,8 +438,17 @@ const AlertDetailMap = ({
 
             durationParagraph.insertAdjacentHTML("afterend", statusHTML);
 
+            // Check if route buttons already exist
+            const existingRouteButtons = popupEl?.querySelector(
+              `.route-buttons-${recipientId}`
+            );
+
             // Handle buttons
-            if (status === "Accepted") {
+            if (status === "Accepted" && !existingRouteButtons) {
+              console.log(
+                "[Button Insert - Branch 2] Adding route buttons for:",
+                recipientRequest.helperEmail
+              );
               // Get recipient data from selectedAlert
               const recipient = selectedAlert.recipients?.find(
                 (r) => r.email === recipientRequest.helperEmail
@@ -308,7 +488,7 @@ const AlertDetailMap = ({
               );
 
               const routeButtonsHTML = `
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
+                <div class="route-buttons-${recipientId}" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
                   <button 
                     onclick="window['showRoute_${recipientId}']()"
                     style="padding: 10px; background: linear-gradient(135deg, #007cbf 0%, #0099ff 100%); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 450; cursor: pointer; font-family: 'Decimal', sans-serif; box-shadow: 0 2px 4px rgba(0,0,0,0.2); transition: all 0.3s ease;"
@@ -336,11 +516,7 @@ const AlertDetailMap = ({
                 const newStatusDiv = document.getElementById(
                   `status-${sanitizedEmail}`
                 );
-                // Check if route buttons already exist to prevent duplicates
-                const existingRouteButtons = popupEl?.querySelector(
-                  `button[onclick*="showRoute_${recipientId}"]`
-                );
-                if (newStatusDiv && !existingRouteButtons) {
+                if (newStatusDiv) {
                   newStatusDiv.insertAdjacentHTML("afterend", routeButtonsHTML);
                 }
               }
@@ -363,12 +539,12 @@ const AlertDetailMap = ({
       });
 
       // Stop polling if any request is accepted
-      if (hasAccepted && onStopPolling) {
+      if (hasAccepted) {
         console.log("Status accepted, stopping polling");
-        onStopPolling();
+        setShouldPollStatus(false);
       }
     }
-  }, [assistStatusData, selectedAlert, onUpdateRecipientStatus, onStopPolling]);
+  }, [assistStatusData, selectedAlert, onUpdateRecipientStatus]);
 
   // Calculate distance between two coordinates using Haversine formula
   const calculateDistance = (lat1, lon1, lat2, lon2) => {
@@ -396,9 +572,24 @@ const AlertDetailMap = ({
     recipientName
   ) => {
     try {
-      // Get the eventId for this recipient
-      const eventId = recipientEventIdsRef.current[recipientEmail];
+      // Get the eventId for this recipient from ref
+      let eventId = recipientEventIdsRef.current[recipientEmail];
 
+      // If not found in ref, try localStorage
+      if (!eventId) {
+        const storedResponse = getAssistMessageResponse(
+          selectedAlert.id,
+          recipientEmail
+        );
+        if (storedResponse && storedResponse.eventId) {
+          eventId = storedResponse.eventId;
+          // Also update the ref for future use
+          recipientEventIdsRef.current[recipientEmail] = eventId;
+          console.log("Retrieved eventId from localStorage:", eventId);
+        }
+      }
+
+      // If still not found, show error
       if (!eventId) {
         Toast.error("Event ID not found. Please try again.");
         return;
@@ -1207,8 +1398,30 @@ const AlertDetailMap = ({
   useEffect(() => {
     if (!map.current) return;
 
+    // Compare alerts data to prevent unnecessary updates when Dashboard refetches
+    const currentAlertsString = JSON.stringify(
+      alerts.map((a) => ({
+        id: a.id,
+        latitude: a.latitude,
+        longitude: a.longitude,
+        title: a.title,
+        duration: a.duration,
+        notificationReason: a.notificationReason,
+      }))
+    );
+
+    if (currentAlertsString === previousAlertsRef.current && !selectedAlert) {
+      console.log("[Map Update] Alerts data unchanged, skipping marker update");
+      return;
+    }
+
+    console.log(
+      "[Map Update] Alerts data changed or alert selected, updating markers"
+    );
+    previousAlertsRef.current = currentAlertsString;
+
     const updateMarkers = () => {
-      // console.log("Updating alert markers");
+      console.log("[Map Update] Updating alert markers");
 
       // Remove existing markers
       markersRef.current.forEach((marker) => marker.remove());
@@ -1856,7 +2069,7 @@ const AlertDetailMap = ({
 
             try {
               // Call the API to send assist message
-              await sendAssistMessage({
+              const response = await sendAssistMessage({
                 email: user?.email,
                 helperEmail: recipient.email,
                 notificationId: selectedAlert.id,
@@ -1866,6 +2079,20 @@ const AlertDetailMap = ({
                 title: "Ocufii",
                 eventName: "Emergency",
               });
+
+              // Save the API response to localStorage
+              if (response) {
+                saveAssistMessageResponse(
+                  selectedAlert.id,
+                  recipient.email,
+                  response
+                );
+                // Also save eventId to ref if available
+                if (response.eventId) {
+                  recipientEventIdsRef.current[recipient.email] =
+                    response.eventId;
+                }
+              }
 
               // Update the popup to show pending status
               const popupEl = document.querySelector(`.${popupId}`);
@@ -1886,10 +2113,8 @@ const AlertDetailMap = ({
                 }
               }
 
-              // Enable TanStack Query polling via Dashboard
-              if (onTriggerPolling) {
-                onTriggerPolling();
-              }
+              // Enable polling
+              setShouldPollStatus(true);
             } catch (error) {
               console.error("Error sending message:", error);
             }
