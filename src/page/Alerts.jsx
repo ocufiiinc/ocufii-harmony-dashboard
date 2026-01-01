@@ -55,7 +55,7 @@ const Alerts = () => {
   // Transform API data to table format (with acknowledge filter)
   const transformAlertData = (alerts, filterUnacknowledged = false) => {
     const filteredAlerts = filterUnacknowledged
-      ? alerts.filter((alert) => alert.acknowledge === 0)
+      ? alerts.filter((alert) => alert.acknowledge === "0")
       : alerts;
 
     return filteredAlerts.map((alert) => ({
@@ -76,7 +76,7 @@ const Alerts = () => {
   // Transform acknowledge alerts (where acknowledge is 1 or 2)
   const transformAcknowledgeAlerts = (alerts) => {
     return alerts
-      .filter((alert) => alert.acknowledge === 1 || alert.acknowledge === 2)
+      .filter((alert) => alert.acknowledge === "1" || alert.acknowledge === "2")
       .map((alert) => ({
         sender: alert.title || "Unknown",
         alert: alert.notificationReason || "No reason provided",
@@ -95,7 +95,7 @@ const Alerts = () => {
   // Transform resolved alerts (where acknowledge is 3)
   const transformResolvedAlerts = (alerts) => {
     return alerts
-      .filter((alert) => alert.acknowledge === 3)
+      .filter((alert) => alert.acknowledge === "3")
       .map((alert) => ({
         sender: alert.title || "Unknown",
         alert: alert.notificationReason || "No reason provided",
@@ -115,13 +115,6 @@ const Alerts = () => {
   const safetyAlerts = transformAlertData(data?.data?.safety?.alerts || []);
   const securityAlerts = transformAlertData(data?.data?.security?.alerts || []);
   const systemAlerts = transformAlertData(data?.data?.system?.alerts || []);
-
-  // Combine all alerts for chart data
-  const allAlertsForChart = [
-    ...(data?.data?.safety?.alerts || []),
-    ...(data?.data?.security?.alerts || []),
-    ...(data?.data?.system?.alerts || []),
-  ];
 
   // Combine all alerts for Open Alerts (only unacknowledged)
   const allAlertsRaw = [
