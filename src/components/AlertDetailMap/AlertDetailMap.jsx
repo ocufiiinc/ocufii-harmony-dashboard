@@ -2075,7 +2075,7 @@ const AlertDetailMap = ({
               selectedAlert.latitude,
               recipient.longitude,
               recipient.latitude,
-              recipient.email || index
+              recipientId
             );
           };
 
