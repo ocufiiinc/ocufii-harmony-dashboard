@@ -48,6 +48,7 @@ const AlertDetailMap = ({
   const [shouldPollStatus, setShouldPollStatus] = React.useState(false);
   const previousAssistStatusRef = useRef(null); // Track previous assist status data
   const previousAlertsRef = useRef(null); // Track previous alerts data
+  const previousSelectedAlertIdRef = useRef(null); // Track previous selected alert ID
 
   // LocalStorage key for assist message responses
   const ASSIST_MESSAGES_KEY = "ocufii_assist_messages";
@@ -1410,15 +1411,33 @@ const AlertDetailMap = ({
       }))
     );
 
-    if (currentAlertsString === previousAlertsRef.current && !selectedAlert) {
-      console.log("[Map Update] Alerts data unchanged, skipping marker update");
+    const currentSelectedAlertId = selectedAlert?.id || null;
+    const alertsDataChanged = currentAlertsString !== previousAlertsRef.current;
+    const selectedAlertChanged =
+      currentSelectedAlertId !== previousSelectedAlertIdRef.current;
+
+    // Skip update if neither alerts data nor selected alert changed
+    if (!alertsDataChanged && !selectedAlertChanged) {
+      console.log(
+        "[Map Update] No changes detected, skipping marker update and map movement"
+      );
       return;
     }
 
-    console.log(
-      "[Map Update] Alerts data changed or alert selected, updating markers"
-    );
-    previousAlertsRef.current = currentAlertsString;
+    if (alertsDataChanged) {
+      console.log("[Map Update] Alerts data changed, updating markers");
+      previousAlertsRef.current = currentAlertsString;
+    }
+
+    if (selectedAlertChanged) {
+      console.log(
+        "[Map Update] Selected alert changed:",
+        previousSelectedAlertIdRef.current,
+        "->",
+        currentSelectedAlertId
+      );
+      previousSelectedAlertIdRef.current = currentSelectedAlertId;
+    }
 
     const updateMarkers = () => {
       console.log("[Map Update] Updating alert markers");
@@ -1589,27 +1608,40 @@ const AlertDetailMap = ({
       createAlertMarkersAsync();
 
       // Fit map to show all markers or focus on selected alert (smoothly)
-      if (selectedAlert && selectedAlert.latitude && selectedAlert.longitude) {
+      // Only flyTo if the selected alert actually changed
+      if (
+        selectedAlertChanged &&
+        selectedAlert &&
+        selectedAlert.latitude &&
+        selectedAlert.longitude
+      ) {
         // If an alert was clicked, smoothly fly to it
+        console.log("[Map Update] Flying to selected alert:", selectedAlert.id);
         map.current.flyTo({
           center: [selectedAlert.longitude, selectedAlert.latitude],
           zoom: 15,
           duration: 1000,
           essential: true,
         });
-      } else if (alertsWithCoords.length > 1) {
-        const bounds = new mapboxgl.LngLatBounds();
-        alertsWithCoords.forEach((alert) =>
-          bounds.extend([alert.longitude, alert.latitude])
-        );
-        map.current.fitBounds(bounds, { padding: 80, duration: 1000 });
-      } else if (alertsWithCoords.length === 1) {
-        map.current.flyTo({
-          center: [alertsWithCoords[0].longitude, alertsWithCoords[0].latitude],
-          zoom: 12,
-          duration: 1000,
-          essential: true,
-        });
+      } else if (alertsDataChanged && !selectedAlert) {
+        // Only fit bounds when alerts data changed and no alert is selected
+        if (alertsWithCoords.length > 1) {
+          const bounds = new mapboxgl.LngLatBounds();
+          alertsWithCoords.forEach((alert) =>
+            bounds.extend([alert.longitude, alert.latitude])
+          );
+          map.current.fitBounds(bounds, { padding: 80, duration: 1000 });
+        } else if (alertsWithCoords.length === 1) {
+          map.current.flyTo({
+            center: [
+              alertsWithCoords[0].longitude,
+              alertsWithCoords[0].latitude,
+            ],
+            zoom: 12,
+            duration: 1000,
+            essential: true,
+          });
+        }
       }
     };
 
