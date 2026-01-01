@@ -11,7 +11,7 @@ export const getDashboard = async (
     const response = await api.get(
       APIROUTES.GET_ACTIVE_ALERTS(email, limit, dateRange)
     );
-    console.log("return response", response.data);
+    // console.log("return response", response.data);
     if (response.data.status == 200) {
       // Ensure all alerts have proper numeric lat/lng for the map
       if (response.data.data) {

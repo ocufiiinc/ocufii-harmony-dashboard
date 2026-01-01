@@ -945,6 +945,15 @@ const AlertDetailMap = ({
 
       // Original alert markers logic - using async to fetch addresses
       const createMarkersAsync = async () => {
+        // Filter alerts that have coordinates
+        const alertsWithCoords = alerts.filter(
+          (alert) =>
+            alert.latitude &&
+            alert.longitude &&
+            !isNaN(alert.latitude) &&
+            !isNaN(alert.longitude)
+        );
+
         for (const alert of alertsWithCoords) {
           // Fetch address from coordinates
           const address = await getAddressFromCoordinates(
@@ -1053,6 +1062,15 @@ const AlertDetailMap = ({
       createMarkersAsync();
 
       // Fit map to show all markers or focus on selected alert
+      // Filter alerts that have coordinates
+      const alertsWithCoords = alerts.filter(
+        (alert) =>
+          alert.latitude &&
+          alert.longitude &&
+          !isNaN(alert.latitude) &&
+          !isNaN(alert.longitude)
+      );
+
       if (selectedAlert && selectedAlert.latitude && selectedAlert.longitude) {
         // If an alert was clicked, center on it
         map.current.flyTo({
@@ -1081,12 +1099,116 @@ const AlertDetailMap = ({
   // Store markers in a ref so we can remove them when alerts change
   const markersRef = useRef([]);
 
+  // Cleanup previous alert data when selectedAlert changes
+  useEffect(() => {
+    if (!map.current || !selectedAlert) return;
+
+    // Only proceed if map is ready and style is loaded
+    if (!map.current.isStyleLoaded()) {
+      console.log("Map style not loaded yet, skipping cleanup");
+      return;
+    }
+
+    console.log("Selected alert changed, cleaning up previous alert data");
+
+    try {
+      // Remove ALL existing markers (alert markers, recipient markers, service markers)
+      markersRef.current.forEach((marker) => {
+        if (marker && marker.remove) {
+          marker.remove();
+        }
+      });
+      markersRef.current = [];
+
+      // Remove all alert markers from DOM
+      const alertMarkers = document.querySelectorAll(".alert-marker");
+      alertMarkers.forEach((marker) => {
+        if (marker && marker.parentNode) {
+          marker.remove();
+        }
+      });
+
+      // Remove all recipient markers
+      const recipientMarkers = document.querySelectorAll(".recipient-marker");
+      recipientMarkers.forEach((marker) => {
+        if (marker && marker.parentNode) {
+          marker.remove();
+        }
+      });
+
+      // Remove all emergency service markers (hospitals, police, fire stations)
+      const serviceTypes = ["hospital", "police", "fire"];
+      serviceTypes.forEach((type) => {
+        const serviceMarkers = document.querySelectorAll(`.${type}-marker`);
+        serviceMarkers.forEach((marker) => {
+          if (marker && marker.parentNode) {
+            marker.remove();
+          }
+        });
+      });
+
+      // Remove all route layers and sources
+      const style = map.current.getStyle();
+      if (style && style.layers) {
+        const layers = [...style.layers]; // Create a copy to avoid mutation issues
+        layers.forEach((layer) => {
+          if (
+            layer.id.startsWith("route-") ||
+            layer.id.startsWith("driving-route-") ||
+            layer.id.startsWith("hospital-") ||
+            layer.id.startsWith("police-") ||
+            layer.id.startsWith("fire-")
+          ) {
+            try {
+              if (map.current.getLayer(layer.id)) {
+                map.current.removeLayer(layer.id);
+              }
+            } catch (e) {
+              console.warn(`Failed to remove layer ${layer.id}:`, e);
+            }
+          }
+        });
+      }
+
+      if (style && style.sources) {
+        const sources = Object.keys(style.sources);
+        sources.forEach((sourceId) => {
+          if (
+            sourceId.startsWith("route-") ||
+            sourceId.startsWith("driving-route-") ||
+            sourceId.startsWith("hospital-") ||
+            sourceId.startsWith("police-") ||
+            sourceId.startsWith("fire-")
+          ) {
+            try {
+              if (map.current.getSource(sourceId)) {
+                map.current.removeSource(sourceId);
+              }
+            } catch (e) {
+              console.warn(`Failed to remove source ${sourceId}:`, e);
+            }
+          }
+        });
+      }
+
+      // Reset tracking refs for fresh start
+      displayedRecipientsRef.current = null;
+      fetchedServicesRef.current.clear();
+      recipientEventIdsRef.current = {};
+      recipientPopupsRef.current = {};
+
+      console.log("Cleanup completed for alert:", selectedAlert.id);
+    } catch (error) {
+      console.error("Error during cleanup:", error);
+    }
+  }, [selectedAlert?.id]); // Only trigger when the alert ID changes
+
   // Update alert markers when alerts change (without recreating the map)
   useEffect(() => {
     if (!map.current) return;
 
     const updateMarkers = () => {
-      console.log("Updating alert markers");
+      // console.log("Updating alert markers");
 
       // Remove existing markers
       markersRef.current.forEach((marker) => marker.remove());
