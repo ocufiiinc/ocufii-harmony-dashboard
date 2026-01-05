@@ -25,6 +25,7 @@ import { RxHamburgerMenu } from "react-icons/rx";
 import { RxCross2 } from "react-icons/rx";
 import { MenuItems } from "../common/CommonData";
 import { ROUTE } from "../common/Routes";
+import moment from "moment/moment";
 
 const DashboardLayout = ({ children }) => {
   const { user, logout } = useUser();
@@ -216,10 +217,22 @@ const DashboardLayout = ({ children }) => {
 
           <DashboardFooter>
             <div>
-              <p>Ocufii 2025, All rights reserved</p>
+              <p>Ocufii {moment().year()}, All rights reserved</p>
               <div>
-                <a href="#terms">Terms of Use</a>
-                <a href="#privacy">Personal Data Processing Policy</a>
+                <a
+                  href="https://www.ocufii.com/terms-of-service/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Terms of Use
+                </a>
+                <a
+                  href="https://www.ocufii.com/privacy-policy/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Personal Data Processing Policy
+                </a>
               </div>
             </div>
           </DashboardFooter>
