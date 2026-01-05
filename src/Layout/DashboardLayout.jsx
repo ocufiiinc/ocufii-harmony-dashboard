@@ -168,11 +168,17 @@ const DashboardLayout = ({ children }) => {
               <MenuItem
                 key={item.id}
                 className={location.pathname === item.path ? "active" : ""}
-                onClick={
-                  item.id === "logout"
-                    ? handleLogout
-                    : () => handleNavigation(item.path)
-                }
+                onClick={() => {
+                  if (item.id === "logout") {
+                    handleLogout();
+                  } else if (item.id === "shop") {
+                    // open shop in new tab
+                    window.open(item.path, "_blank", "noopener,noreferrer");
+                    setIsSidebarOpen(false);
+                  } else {
+                    handleNavigation(item.path);
+                  }
+                }}
               >
                 <span className="icon">
                   <img src={item.icon} alt={item.label} />
