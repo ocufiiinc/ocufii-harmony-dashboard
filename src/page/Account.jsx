@@ -58,7 +58,7 @@ const Account = () => {
   const handleDeleteAccount = async () => {
     const deleteConfirmed = await deleteUserAccount(profileData?.userEmail);
     if (deleteConfirmed) {
-      navigate(ROUTE.LOGIN)
+      navigate(ROUTE.LOGIN);
     }
   };
 
@@ -78,7 +78,7 @@ const Account = () => {
             <UserName>{user?.name || "John Doe"}</UserName>
 
             <DeleteAccountSection>
-              <DeleteAccountButton onClick={handleDeleteAccount}>
+              <DeleteAccountButton disabled onClick={handleDeleteAccount}>
                 <img src={deleteIcon} alt="Delete" />
                 Delete Account
               </DeleteAccountButton>

@@ -67,6 +67,7 @@ const Settings = () => {
                   handleNotificationToggle("urgentBeaconMovementSound")
                 }
                 onColor="rgb(76, 217, 100)"
+                disabled={true}
               />
             </SettingItem>
           </SettingsSection>
@@ -80,6 +81,7 @@ const Settings = () => {
                 checked={notifications.defaultTone}
                 onChange={() => handleNotificationToggle("defaultTone")}
                 onColor="rgb(76, 217, 100)"
+                disabled={true}
               />
             </SettingItem>
             <SettingItem>
@@ -88,6 +90,7 @@ const Settings = () => {
                 checked={notifications.fireAlarm}
                 onChange={() => handleNotificationToggle("fireAlarm")}
                 onColor="rgb(76, 217, 100)"
+                disabled={true}
               />
             </SettingItem>
             <SettingItem>
@@ -96,6 +99,7 @@ const Settings = () => {
                 checked={notifications.emergencyAlarm}
                 onChange={() => handleNotificationToggle("emergencyAlarm")}
                 onColor="rgb(76, 217, 100)"
+                disabled={true}
               />
             </SettingItem>
           </SettingsSection>
@@ -111,6 +115,7 @@ const Settings = () => {
                   handleNotificationToggle("urgentBeaconMovementVibration")
                 }
                 onColor="rgb(76, 217, 100)"
+                disabled={true}
               />
             </SettingItem>
           </SettingsSection>
@@ -123,6 +128,7 @@ const Settings = () => {
                 checked={autoLogout}
                 onChange={() => setAutoLogout(!autoLogout)}
                 onColor="rgb(76, 217, 100)"
+                disabled={true}
               />
             </SettingItem>
             <AutoLogoutDescription>
@@ -138,6 +144,7 @@ const Settings = () => {
                     value="5"
                     checked={logoutTime === "5"}
                     onChange={(e) => setLogoutTime(e.target.value)}
+                    disabled={true}
                   />
                   <RadioLabel>5 Minutes</RadioLabel>
                 </RadioOption>
@@ -148,6 +155,7 @@ const Settings = () => {
                     value="10"
                     checked={logoutTime === "10"}
                     onChange={(e) => setLogoutTime(e.target.value)}
+                    disabled={true}
                   />
                   <RadioLabel>10 Minutes</RadioLabel>
                 </RadioOption>
@@ -158,6 +166,7 @@ const Settings = () => {
                     value="15"
                     checked={logoutTime === "15"}
                     onChange={(e) => setLogoutTime(e.target.value)}
+                    disabled={true}
                   />
                   <RadioLabel>15 Minutes</RadioLabel>
                 </RadioOption>
