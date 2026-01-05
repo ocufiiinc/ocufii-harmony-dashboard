@@ -86,7 +86,9 @@ const ChangePassword = ({ onCancel, onUpdate }) => {
 
       <ActionButtons>
         <CancelButton onClick={onCancel}>Cancel</CancelButton>
-        <SaveButton onClick={handleUpdate}>Update Password</SaveButton>
+        <SaveButton disabled onClick={handleUpdate}>
+          Update Password
+        </SaveButton>
       </ActionButtons>
     </RightSection>
   );

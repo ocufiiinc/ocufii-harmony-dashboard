@@ -128,7 +128,7 @@ const UserProfile = ({
 
       <ActionButtons>
         <CancelButton onClick={onCancel}>Cancel</CancelButton>
-        <SaveButton onClick={handleSave}>Save Changes</SaveButton>
+        <SaveButton disabled onClick={handleSave}>Save Changes</SaveButton>
       </ActionButtons>
     </RightSection>
   );

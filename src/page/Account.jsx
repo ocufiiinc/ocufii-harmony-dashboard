@@ -17,10 +17,13 @@ import {
   DeleteAccountSection,
   DeleteAccountButton,
 } from "../styles/Account.styled";
+import { deleteUserAccount } from "../api/AccountApi";
+import { useNavigate } from "react-router-dom";
+import { ROUTE } from "../common/Routes";
 
 const Account = () => {
   const { user } = useUser();
-
+  const navigate = useNavigate();
   const [profileData, setProfileData] = useState({
     userName: user?.firstName
       ? `${user.firstName} ${user.lastName || ""}`
@@ -52,9 +55,11 @@ const Account = () => {
     // Add your password update logic here
   };
 
-  const handleDeleteAccount = () => {
-    console.log("Delete account");
-    // Add your delete account logic here
+  const handleDeleteAccount = async () => {
+    const deleteConfirmed = await deleteUserAccount(profileData?.userEmail);
+    if (deleteConfirmed) {
+      navigate(ROUTE.LOGIN)
+    }
   };
 
   return (

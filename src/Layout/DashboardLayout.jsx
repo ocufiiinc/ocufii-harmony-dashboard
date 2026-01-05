@@ -104,12 +104,12 @@ const DashboardLayout = ({ children }) => {
           </HeaderLogo>
           <HeaderUser>
             <HeaderNavLinks>
-              <NavLink onClick={() => console.log("Navigate to Users")}>
-                Users
+              {/* <NavLink onClick={() => console.log("Navigate to Users")}> 
+                 Users
               </NavLink>
               <NavLink onClick={() => console.log("Navigate to Subscriptions")}>
                 Subscriptions
-              </NavLink>
+              </NavLink> */}
               <NavLink
                 onClick={() => navigate(ROUTE.SETTINGS)}
                 className={location.pathname === ROUTE.SETTINGS ? "active" : ""}
