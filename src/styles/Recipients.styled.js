@@ -104,11 +104,11 @@ export const StatusBadge = styled.span`
   font-family: "Decimal", sans-serif;
   background-color: ${(props) => {
     switch (props.status) {
-      case "ACCEPTED":
+      case 0:
         return "#d4edda";
-      case "SNOOZED":
+      case 1:
         return "rgba(237, 139, 0, 0.32)";
-      case "BLOCKED":
+      case 2:
         return "#9C9B9A";
       default:
         return "#e9ecef";
@@ -116,11 +116,11 @@ export const StatusBadge = styled.span`
   }};
   color: ${(props) => {
     switch (props.status) {
-      case "ACCEPTED":
+      case 0:
         return "#155724";
-      case "SNOOZED":
+      case 1:
         return "rgba(237, 139, 0, 1)";
-      case "BLOCKED":
+      case 2:
         return "#3b3a3a";
       default:
         return "#495057";
@@ -251,8 +251,33 @@ export const PermissionBadge = styled.span`
   font-weight: 500;
   text-transform: uppercase;
   font-family: "Decimal", sans-serif;
-  background-color: #d4edda;
-  color: #155724;
+
+  background-color: ${(props) => {
+    switch (props.status) {
+      case 1: // Pending
+        return "#fae9ac";
+      case 2: // Accepted
+        return "rgba(38, 167, 105,0.2)";
+      case 3: // Rejected
+        return "#f8d7da";
+      case 0: // No status / empty
+      default:
+        return "#ffffff";
+    }
+  }};
+  color: ${(props) => {
+    switch (props.status) {
+      case 1:
+        return "#FCC400";
+      case 2:
+        return "#26A769";
+      case 3:
+        return "#F00";
+      case 0:
+      default:
+        return "#ffffff";
+    }
+  }};
 `;
 
 export const TestAlertSection = styled.div`

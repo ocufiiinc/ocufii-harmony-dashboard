@@ -41,7 +41,17 @@ const RecipientDetails = ({ recipient }) => {
         <PermissionHeader>
           <PermissionTitle>Safety Alerts</PermissionTitle>
           <PermissionRow>
-            <PermissionBadge>ACCEPTED</PermissionBadge>
+            <PermissionBadge status={recipient.safetyStatus}>
+              {recipient.safetyStatus === 0
+                ? ""
+                : recipient.safetyStatus === 1
+                ? "Pending"
+                : recipient.safetyStatus === 2
+                ? "Accepted"
+                : recipient.safetyStatus === 3
+                ? "Rejected"
+                : ""}
+            </PermissionBadge>
             <Switch
               checked={safetyAlerts}
               onChange={setSafetyAlerts}
@@ -56,6 +66,7 @@ const RecipientDetails = ({ recipient }) => {
       <PermissionSection>
         <PermissionRow>
           <PermissionTitle>Location Sharing Permission</PermissionTitle>
+
           <Switch
             checked={locationSharing}
             onChange={setLocationSharing}
@@ -79,7 +90,17 @@ const RecipientDetails = ({ recipient }) => {
         <PermissionHeader>
           <PermissionTitle>Security Alerts</PermissionTitle>
           <PermissionRow>
-            <PermissionBadge>ACCEPTED</PermissionBadge>
+            <PermissionBadge status={recipient.securityStatus}>
+              {recipient.securityStatus === 0
+                ? ""
+                : recipient.securityStatus === 1
+                ? "Pending"
+                : recipient.securityStatus === 2
+                ? "Accepted"
+                : recipient.securityStatus === 3
+                ? "Rejected"
+                : ""}
+            </PermissionBadge>
             <Switch
               checked={securityAlerts}
               onChange={setSecurityAlerts}

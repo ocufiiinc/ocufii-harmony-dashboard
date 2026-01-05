@@ -105,6 +105,15 @@ const Recipients = () => {
                         <MdChevronRight />
                       </AccordionIcon>
                       <RecipientName>{recipient.name}</RecipientName>
+                      <StatusBadge status={recipient.userStatus}>
+                        {recipient.userStatus === 0
+                          ? "Accepted"
+                          : recipient.userStatus === 1
+                          ? "Snoozed"
+                          : recipient.userStatus === 2
+                          ? "Blocked"
+                          : "Unknown"}
+                      </StatusBadge>
                     </AccordionLeft>
                     <AccordionRight>
                       <DeleteButton onClick={() => handleDelete(recipient.id)}>
