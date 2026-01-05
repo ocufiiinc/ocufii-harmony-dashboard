@@ -21,4 +21,5 @@ export const APIROUTES = {
   SET_SNOOZE: "/Dashboard/devices/snooze/start",
   STOP_SNOOZE: "/Dashboard/devices/snooze/stop",
   DELETE_ACCOUNT: "/Email/DeleteAccount",
+  GET_RECIPIENTS: (email) => `/UserNotify/GetRecipients?email=${email}`,
 };

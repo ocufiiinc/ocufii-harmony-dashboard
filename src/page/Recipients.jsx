@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import DashboardLayout from "../Layout/DashboardLayout";
+import { useUser } from "../context/UserContext";
+import { getRecipients } from "../api/RecipientsApi";
 import { DashboardContent } from "../styles/Dashboard.styled";
 import { MdChevronRight, MdDelete } from "react-icons/md";
 import RecipientDetails from "../components/RecipientDetails";
@@ -26,14 +29,38 @@ import {
 
 const Recipients = () => {
   const navigate = useNavigate();
+  const { user } = useUser();
   const [openAccordion, setOpenAccordion] = useState(null);
 
-  // Sample data - replace with API call later
-  const [recipients, setRecipients] = useState([
-    { id: 1, name: "Recipient - 1", status: "ACCEPTED" },
-    { id: 2, name: "Recipient - 2", status: "SNOOZED" },
-    { id: 3, name: "Recipient - 3", status: "BLOCKED" },
-  ]);
+  // Fetch recipients data
+  const {
+    data: recipientsData,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["recipients", user?.email],
+    queryFn: () => getRecipients(user?.email),
+    enabled: !!user?.email,
+  });
+
+  // Transform API data to component format
+  const recipients =
+    recipientsData?.userNotify?.map((item, index) => ({
+      id: index + 1,
+      email: item.recipient,
+      name: item.recipientName || item.recipient,
+      enableSafety: item.enableSafety,
+      enableSecurity: item.enableSecurity,
+      enableLocation: item.enableLocation,
+      safetyStatus: item.safetyStatus,
+      securityStatus: item.securityStatus,
+      notificationStatus: item.notificationStatus,
+      userStatus: item.userStatus,
+      senderName: item.senderName,
+      dateCreated: item.dateCreated,
+      mobileDevice: item.mobileDevice,
+      freeUser: item.freeUser,
+    })) || [];
 
   const toggleAccordion = (id) => {
     setOpenAccordion(openAccordion === id ? null : id);
@@ -54,7 +81,15 @@ const Recipients = () => {
         <RecipientsContainer>
           <PageTitle>Alert My Recipients</PageTitle>
 
-          {recipients.length === 0 ? (
+          {isLoading ? (
+            <EmptyState>
+              <EmptyStateText>Loading recipients...</EmptyStateText>
+            </EmptyState>
+          ) : error ? (
+            <EmptyState>
+              <EmptyStateText>Error loading recipients</EmptyStateText>
+            </EmptyState>
+          ) : recipients.length === 0 ? (
             <EmptyState>
               <EmptyStateText>No My Recipients in Your List</EmptyStateText>
             </EmptyState>
@@ -70,9 +105,6 @@ const Recipients = () => {
                         <MdChevronRight />
                       </AccordionIcon>
                       <RecipientName>{recipient.name}</RecipientName>
-                      <StatusBadge status={recipient.status}>
-                        {recipient.status}
-                      </StatusBadge>
                     </AccordionLeft>
                     <AccordionRight>
                       <DeleteButton onClick={() => handleDelete(recipient.id)}>
@@ -91,7 +123,7 @@ const Recipients = () => {
           )}
 
           <div style={{ marginTop: "24px", textAlign: "center" }}>
-            <AddRecipientButton onClick={handleAddRecipient}>
+            <AddRecipientButton onClick={handleAddRecipient} disabled={true}>
               + Add Recipient
             </AddRecipientButton>
           </div>

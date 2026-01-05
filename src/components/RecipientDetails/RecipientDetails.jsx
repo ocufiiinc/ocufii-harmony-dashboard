@@ -16,10 +16,14 @@ import {
 } from "../../styles/Recipients.styled";
 
 const RecipientDetails = ({ recipient }) => {
-  const [safetyAlerts, setSafetyAlerts] = useState(true);
-  const [locationSharing, setLocationSharing] = useState(true);
-  const [securityAlerts, setSecurityAlerts] = useState(true);
-
+  const [safetyAlerts, setSafetyAlerts] = useState(recipient.enableSafety);
+  const [locationSharing, setLocationSharing] = useState(
+    recipient.enableLocation
+  );
+  const [securityAlerts, setSecurityAlerts] = useState(
+    recipient.enableSecurity
+  );
+  console.log("Recipient Details:", recipient);
   const handleSendTestAlert = () => {
     console.log("Send test alert to:", recipient.name);
     // Add API call here
@@ -27,7 +31,7 @@ const RecipientDetails = ({ recipient }) => {
 
   return (
     <DetailsContainer>
-      <EmailField>muhammedfaizankhalil@gmail.com</EmailField>
+      <EmailField>{recipient.email}</EmailField>
 
       <DescriptionText>
         Enabling this feature allows the recipient to receive safety alerts.
@@ -43,6 +47,7 @@ const RecipientDetails = ({ recipient }) => {
               onChange={setSafetyAlerts}
               onColor="rgb(76, 217, 100)"
               offColor="rgb(200, 199, 204)"
+              disabled={true}
             />
           </PermissionRow>
         </PermissionHeader>
@@ -56,6 +61,7 @@ const RecipientDetails = ({ recipient }) => {
             onChange={setLocationSharing}
             onColor="rgb(76, 217, 100)"
             offColor="rgb(200, 199, 204)"
+            disabled={true}
           />
         </PermissionRow>
       </PermissionSection>
@@ -79,6 +85,7 @@ const RecipientDetails = ({ recipient }) => {
               onChange={setSecurityAlerts}
               onColor="rgb(76, 217, 100)"
               offColor="rgb(200, 199, 204)"
+              disabled={true}
             />
           </PermissionRow>
         </PermissionHeader>
@@ -89,7 +96,7 @@ const RecipientDetails = ({ recipient }) => {
           This is a <strong>test alert</strong> from the Ocufii Safety System.
           No action is required.
         </TestAlertText>
-        <TestAlertButton onClick={handleSendTestAlert}>
+        <TestAlertButton onClick={handleSendTestAlert} disabled={true}>
           Send a Test Alert
         </TestAlertButton>
       </TestAlertSection>
