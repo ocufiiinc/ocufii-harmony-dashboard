@@ -1,6 +1,27 @@
 import React, { useState } from "react";
 import Switch from "react-ios-switch";
-import { Container,Section,SectionTitle,Row,TestRow,TestInput,PrimaryButton,StatusPill ,ActionGroup,SecondaryButton,UnlinkButton,Note} from "../styles/MemberDetails.styled";
+import { MdSecurity } from "react-icons/md";
+import { GiBurningPassion } from "react-icons/gi";
+import {
+  Container,
+  Section,
+  SectionTitle,
+  SectionSubtitle,
+  Row,
+  RowLabel,
+  TestRow,
+  TestInput,
+  PrimaryButton,
+  StatusPill,
+  StatusRow,
+  AlertIcon,
+  ActionGroup,
+  SecondaryButton,
+  UnlinkButton,
+  Note,
+} from "../styles/MemberDetails.styled";
+import safetAlertImg from "../assets/images/safety2.png";
+import securityAlertImg from "../assets/images/security2.png";
 
 const MemberDetails = ({ member, onUnlink = () => {} }) => {
   const [safetyAlerts, setSafetyAlerts] = useState(true);
@@ -22,28 +43,45 @@ const MemberDetails = ({ member, onUnlink = () => {} }) => {
   return (
     <Container>
       <Section>
-        <SectionTitle>Alerts You Share (Outgoing)</SectionTitle>
+        <SectionTitle>
+          Alerts You Share{" "}
+          <span style={{ color: "#9aa3ad", fontWeight: "400" }}>
+            (Outgoing)
+          </span>
+        </SectionTitle>
+        <SectionSubtitle>
+          Enabling this feature allows the member to receive safety alerts.
+        </SectionSubtitle>
 
         <Row>
-          <div>Safety Alerts</div>
+          <RowLabel>Safety Alerts</RowLabel>
           <Switch checked={safetyAlerts} onChange={(v) => setSafetyAlerts(v)} />
         </Row>
 
         <Row>
-          <div>Location Sharing Permission</div>
+          <RowLabel>Location Sharing Permission</RowLabel>
           <Switch
             checked={locationShare}
             onChange={(v) => setLocationShare(v)}
           />
         </Row>
 
+        <SectionSubtitle>
+          Enabling this feature allows the member to view your location only
+          when a safety alert is triggered.
+        </SectionSubtitle>
+
         <Row>
-          <div>Security Alerts</div>
+          <RowLabel>Security Alerts</RowLabel>
           <Switch
             checked={securityAlerts}
             onChange={(v) => setSecurityAlerts(v)}
           />
         </Row>
+
+        <SectionSubtitle>
+          Enabling this feature allows the member to receive security alerts.
+        </SectionSubtitle>
 
         <TestRow>
           <TestInput
@@ -57,17 +95,40 @@ const MemberDetails = ({ member, onUnlink = () => {} }) => {
       </Section>
 
       <Section>
-        <SectionTitle>Alerts You Receive (Incoming)</SectionTitle>
+        <SectionTitle>
+          Alerts You Receive{" "}
+          <span style={{ color: "#9aa3ad", fontWeight: "400" }}>
+            (Incoming)
+          </span>
+        </SectionTitle>
 
-        <Row>
-          <div>Safety Alerts</div>
+        <StatusRow>
+          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+            <AlertIcon>
+              <img
+                src={safetAlertImg}
+                alt="Safety Alert"
+                style={{ width: "24px", height: "24px" }}
+              />
+            </AlertIcon>
+            <RowLabel>Safety Alerts</RowLabel>
+          </div>
           <StatusPill>ACTIVE</StatusPill>
-        </Row>
+        </StatusRow>
 
-        <Row>
-          <div>Security Alerts</div>
+        <StatusRow>
+          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+            <AlertIcon>
+              <img
+                src={securityAlertImg}
+                alt="Security Alert"
+                style={{ width: "24px", height: "24px" }}
+              />
+            </AlertIcon>
+            <RowLabel>Security Alerts</RowLabel>
+          </div>
           <StatusPill>ACTIVE</StatusPill>
-        </Row>
+        </StatusRow>
 
         <ActionGroup>
           <SecondaryButton>Snooze</SecondaryButton>

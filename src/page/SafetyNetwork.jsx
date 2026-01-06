@@ -91,14 +91,14 @@ const SafetyNetwork = () => {
             onConfirm={handleConfirmDelete}
           />
           <ButtonGroup>
-            <ActionButton onClick={handleInvite}>
+            <ActionButton onClick={handleInvite} disabled={true}>
               <img src={sendEmail} alt="Send Email" />
               <div style={{ textAlign: "left" }}>
                 <div>Invite Someone</div>
                 <div>to My Safety Network</div>
               </div>
             </ActionButton>
-            <ActionButton onClick={handleAcceptInvitation}>
+            <ActionButton onClick={handleAcceptInvitation} disabled={true}>
               <img src={receiveEmail} alt="Receive Email" />
               <div style={{ textAlign: "left" }}>
                 <div>Accept Invitation</div>

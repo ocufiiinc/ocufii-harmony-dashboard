@@ -357,13 +357,13 @@ export const DeleteButton = styled.button`
 `;
 
 export const AccordionContent = styled.div`
-  max-height: ${(props) => (props.$isOpen ? "500px" : "0")};
-  overflow: hidden;
-  transition: max-height 0.3s ease;
+  max-height: ${(props) => (props.$isOpen ? "2000px" : "0")};
+  overflow: ${(props) => (props.$isOpen ? "visible" : "hidden")};
+  transition: max-height 0.5s ease;
   background: #f8f9fa;
   border-top: ${(props) => (props.$isOpen ? "1px solid #e9ecef" : "none")};
 `;
 
 export const AccordionBody = styled.div`
-  padding: 20px;
+  padding: 0;
 `;
