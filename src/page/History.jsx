@@ -2,7 +2,8 @@ import React, { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import moment from "moment";
 import { useUser } from "../context/UserContext";
-import { getAlertSummary } from "../api/DashboardApi";
+import { getAlertSummary, getDashboard } from "../api/DashboardApi";
+import { getSafetyAlertIcon, getDeviceIcon } from "../utility/DeviceMapping";
 import { DashboardContent } from "../styles/Dashboard.styled";
 import DashboardLayout from "../Layout/DashboardLayout";
 import {
@@ -50,10 +51,35 @@ import ResolvedImage from "../assets/images/done2.png";
 const History = () => {
   const { user } = useUser();
   const [selectedFilter, setSelectedFilter] = useState("lastWeek");
+  const [alertCategoryFilter, setAlertCategoryFilter] = useState("all");
 
   const handleFilterChange = (e) => {
     setSelectedFilter(e.target.value);
   };
+
+  const handleAlertCategoryChange = (e) => {
+    setAlertCategoryFilter(e.target.value);
+  };
+
+  // Convert filter to dateRange format for API
+  const getDateRange = () => {
+    if (selectedFilter === "lastMonth") {
+      return "30 days";
+    } else if (selectedFilter === "last3Months") {
+      return "90 days";
+    } else {
+      return "7 days";
+    }
+  };
+
+  // Fetch dashboard data with date range
+  const { data: dashboardData } = useQuery({
+    queryKey: ["dashboardHistory", user?.email, selectedFilter],
+    queryFn: () => getDashboard(user?.email || "", 1000, getDateRange()),
+    enabled: !!user?.email,
+    refetchInterval: 60000, // Refetch every 1 minute
+    staleTime: 60000, // Cache for 1 minute
+  });
 
   // TanStack Query for alert summary with dynamic time range
   const { data: alertSummaryApiData } = useQuery({
@@ -118,7 +144,6 @@ const History = () => {
     },
   ];
 
-  console.log("Alert Summary Data:", alertSummaryApiData);
   // Stats data based on selected filter
   const statsData = useMemo(
     () => [
@@ -161,6 +186,25 @@ const History = () => {
     ],
     [alertSummaryApiData]
   );
+
+  // Combine all alerts from safety, security, and system
+  const allAlerts = useMemo(() => {
+    const safetyAlerts = dashboardData?.data?.safety?.alerts || [];
+    const securityAlerts = dashboardData?.data?.security?.alerts || [];
+    const systemAlerts = dashboardData?.data?.system?.alerts || [];
+
+    return [...safetyAlerts, ...securityAlerts, ...systemAlerts].sort(
+      (a, b) => new Date(b.duration) - new Date(a.duration)
+    );
+  }, [dashboardData]);
+
+  // Filter alerts based on category
+  const filteredAlerts = useMemo(() => {
+    if (alertCategoryFilter === "all") {
+      return allAlerts;
+    }
+    return allAlerts.filter((alert) => alert.type === alertCategoryFilter);
+  }, [allAlerts, alertCategoryFilter]);
 
   return (
     <DashboardLayout>
@@ -267,7 +311,10 @@ const History = () => {
               <CardContent>
                 <AlertFilter>
                   <label>Filter:</label>
-                  <select defaultValue="all">
+                  <select
+                    value={alertCategoryFilter}
+                    onChange={handleAlertCategoryChange}
+                  >
                     <option value="all">All Alerts</option>
                     <option value="safety">Safety Alerts</option>
                     <option value="security">Security Alerts</option>
@@ -275,42 +322,70 @@ const History = () => {
                   </select>
                 </AlertFilter>
 
-                <AlertList>
-                  <AlertItem>
-                    <img src={beaconImg} alt="FlexiTag Beacon" />
-                    <div className="alert-info">
-                      <div className="alert-title">Movement Detected</div>
-                      <div className="alert-device">FlexiTag Beacon</div>
+                <AlertList style={{ maxHeight: "400px", overflowY: "auto" }}>
+                  {filteredAlerts.length === 0 ? (
+                    <div
+                      style={{
+                        textAlign: "center",
+                        padding: "40px 20px",
+                        color: "#666",
+                      }}
+                    >
+                      No alerts found
                     </div>
-                    <div className="alert-time">Sep 5 2025 02:21:12 AM</div>
-                  </AlertItem>
+                  ) : (
+                    filteredAlerts.map((alert) => {
+                      // Get appropriate icon based on alert type
+                      let iconElement;
+                      if (alert.type === "safety") {
+                        const iconData = getSafetyAlertIcon(
+                          alert.notificationReason
+                        );
+                        if (iconData.type === "image") {
+                          iconElement = (
+                            <img
+                              src={iconData.src}
+                              alt={iconData.alt}
+                              style={{ width: "40px", height: "40px" }}
+                            />
+                          );
+                        } else {
+                          const IconComponent = iconData.Component;
+                          iconElement = (
+                            <IconComponent
+                              style={{ fontSize: "40px", color: "#00B5E2" }}
+                            />
+                          );
+                        }
+                      } else {
+                        // Security or System alert - use device icon
+                        iconElement = (
+                          <img
+                            src={getDeviceIcon(alert.deviceType)}
+                            alt="Device"
+                            style={{ width: "40px", height: "40px" }}
+                          />
+                        );
+                      }
 
-                  <AlertItem>
-                    <img src={beaconImg} alt="FlexiBand Beacon" />
-                    <div className="alert-info">
-                      <div className="alert-title">Movement Detected</div>
-                      <div className="alert-device">FlexiBand Beacon</div>
-                    </div>
-                    <div className="alert-time">Sep 5 2025 02:21:12 AM</div>
-                  </AlertItem>
-
-                  <AlertItem>
-                    <img src={beaconImg} alt="FlexiTag Beacon" />
-                    <div className="alert-info">
-                      <div className="alert-title">Movement Detected</div>
-                      <div className="alert-device">FlexiTag Beacon</div>
-                    </div>
-                    <div className="alert-time">Sep 5 2025 02:21:12 AM</div>
-                  </AlertItem>
-
-                  <AlertItem>
-                    <img src={baseStationImg} alt="Office Hub" />
-                    <div className="alert-info">
-                      <div className="alert-title">WiFi Hub Online</div>
-                      <div className="alert-device">Office Hub</div>
-                    </div>
-                    <div className="alert-time">Sep 5 2025 02:21:12 AM</div>
-                  </AlertItem>
+                      return (
+                        <AlertItem key={alert.id}>
+                          {iconElement}
+                          <div className="alert-info">
+                            <div className="alert-title">
+                              {alert.notificationReason}
+                            </div>
+                            <div className="alert-device">{alert.title}</div>
+                          </div>
+                          <div className="alert-time">
+                            {moment(alert.duration).format(
+                              "MMM D YYYY hh:mm:ss A"
+                            )}
+                          </div>
+                        </AlertItem>
+                      );
+                    })
+                  )}
                 </AlertList>
 
                 <DownloadSection>
