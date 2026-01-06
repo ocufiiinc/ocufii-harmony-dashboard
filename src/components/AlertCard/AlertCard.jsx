@@ -46,14 +46,19 @@ const AlertCard = ({ category, color, count, alerts, onViewAll, children }) => {
 
   // Filter alerts based on selected filter
   const filteredAlerts = useMemo(() => {
+    // First filter out acknowledged alerts (acknowledge === 1 or 2)
+    const activeAlerts = alerts.filter(
+      (alert) => alert.acknowledge !== "1" && alert.acknowledge !== "2"
+    );
+
     if (selectedFilter === "All Alerts") {
-      return alerts;
+      return activeAlerts;
     }
 
     // Safety alerts - use includes for notificationReason
     if (category === "Safety") {
-      console.log("Filtering Safety Alerts by:", selectedFilter, alerts);
-      return alerts.filter((alert) =>
+      console.log("Filtering Safety Alerts by:", selectedFilter, activeAlerts);
+      return activeAlerts.filter((alert) =>
         alert.notificationReason?.includes(selectedFilter)
       );
     }
@@ -61,12 +66,12 @@ const AlertCard = ({ category, color, count, alerts, onViewAll, children }) => {
     // Security - use deviceType
     if (category === "Security") {
       if (selectedFilter === "Beacon Alert") {
-        return alerts.filter((alert) =>
+        return activeAlerts.filter((alert) =>
           ["0", "2", "3", "03"].includes(alert.deviceType)
         );
       }
       if (selectedFilter === "Connected Lock Alert") {
-        return alerts.filter((alert) =>
+        return activeAlerts.filter((alert) =>
           ["4", "5", "6"].includes(alert.deviceType)
         );
       }
@@ -76,27 +81,27 @@ const AlertCard = ({ category, color, count, alerts, onViewAll, children }) => {
     if (category === "System") {
       if (selectedFilter === "Beacon Alert") {
         console.log("Filtering System Alerts for beacon alert");
-        return alerts.filter((alert) =>
+        return activeAlerts.filter((alert) =>
           ["0", "2", "3", "03"].includes(String(alert.deviceType))
         );
       }
       if (selectedFilter === "Connected Lock Alert") {
         console.log("Filtering System Alerts for connected lock alert");
-        return alerts.filter((alert) =>
+        return activeAlerts.filter((alert) =>
           ["4", "5", "6"].includes(String(alert.deviceType))
         );
       }
       if (selectedFilter === "Safety Card Alert") {
         console.log("Filtering System Alerts for safety card alert");
-        return alerts.filter((alert) => String(alert.deviceType) === "7");
+        return activeAlerts.filter((alert) => String(alert.deviceType) === "7");
       }
       if (selectedFilter === "Wifi") {
         console.log("Filtering System Alerts for Wifi Hub");
-        return alerts.filter((alert) => String(alert.deviceType) === "1");
+        return activeAlerts.filter((alert) => String(alert.deviceType) === "1");
       }
     }
 
-    return alerts;
+    return activeAlerts;
   }, [alerts, selectedFilter, category]);
 
   const dropdownOptions = getDropdownOptions();
