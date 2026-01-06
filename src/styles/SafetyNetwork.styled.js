@@ -298,11 +298,11 @@ export const StatusBadge = styled.span`
   font-family: "Decimal", sans-serif;
   background-color: ${(props) => {
     switch (props.status) {
-      case "ACCEPTED":
-        return "#d4edda";
+      case "LINKED":
+        return "rgba(38, 167, 105,0.2)";
       case "PENDING":
-        return "#fff3cd";
-      case "BLOCKED":
+        return "#fae9ac";
+      case "UNLINKED":
         return "#f8d7da";
       default:
         return "#e9ecef";
@@ -310,12 +310,12 @@ export const StatusBadge = styled.span`
   }};
   color: ${(props) => {
     switch (props.status) {
-      case "ACCEPTED":
-        return "#155724";
+      case "LINKED":
+        return "#26A769";
       case "PENDING":
-        return "#856404";
-      case "BLOCKED":
-        return "#721c24";
+        return "#FCC400";
+      case "UNLINKED":
+        return "#F00";
       default:
         return "#495057";
     }

@@ -23,10 +23,16 @@ import {
 import safetAlertImg from "../assets/images/safety2.png";
 import securityAlertImg from "../assets/images/security2.png";
 
-const MemberDetails = ({ member, onUnlink = () => {} }) => {
-  const [safetyAlerts, setSafetyAlerts] = useState(true);
-  const [locationShare, setLocationShare] = useState(true);
-  const [securityAlerts, setSecurityAlerts] = useState(true);
+const MemberDetails = ({ member, outbound, inbound, onUnlink = () => {} }) => {
+  const [safetyAlerts, setSafetyAlerts] = useState(
+    outbound?.enableSafety || false
+  );
+  const [locationShare, setLocationShare] = useState(
+    outbound?.enableLocation || false
+  );
+  const [securityAlerts, setSecurityAlerts] = useState(
+    outbound?.enableSecurity || false
+  );
   const [testMessage, setTestMessage] = useState(
     "This is a test alert from the Ocufii Safety System. No action is required."
   );
@@ -39,6 +45,10 @@ const MemberDetails = ({ member, onUnlink = () => {} }) => {
   const handleUnlink = () => {
     onUnlink(member);
   };
+
+  // Determine if incoming alerts are active
+  const isSafetyActive = inbound?.enableSafety;
+  const isSecurityActive = inbound?.enableSecurity;
 
   return (
     <Container>
@@ -55,7 +65,11 @@ const MemberDetails = ({ member, onUnlink = () => {} }) => {
 
         <Row>
           <RowLabel>Safety Alerts</RowLabel>
-          <Switch checked={safetyAlerts} onChange={(v) => setSafetyAlerts(v)} />
+          <Switch
+            checked={safetyAlerts}
+            onChange={(v) => setSafetyAlerts(v)}
+            disabled={true}
+          />
         </Row>
 
         <Row>
@@ -63,6 +77,7 @@ const MemberDetails = ({ member, onUnlink = () => {} }) => {
           <Switch
             checked={locationShare}
             onChange={(v) => setLocationShare(v)}
+            disabled={true}
           />
         </Row>
 
@@ -76,6 +91,7 @@ const MemberDetails = ({ member, onUnlink = () => {} }) => {
           <Switch
             checked={securityAlerts}
             onChange={(v) => setSecurityAlerts(v)}
+            disabled={true}
           />
         </Row>
 
@@ -88,7 +104,7 @@ const MemberDetails = ({ member, onUnlink = () => {} }) => {
             value={testMessage}
             onChange={(e) => setTestMessage(e.target.value)}
           />
-          <PrimaryButton onClick={sendTestAlert}>
+          <PrimaryButton onClick={sendTestAlert} disabled={true}>
             Send a Test Alert
           </PrimaryButton>
         </TestRow>
@@ -113,7 +129,9 @@ const MemberDetails = ({ member, onUnlink = () => {} }) => {
             </AlertIcon>
             <RowLabel>Safety Alerts</RowLabel>
           </div>
-          <StatusPill>ACTIVE</StatusPill>
+          <StatusPill $isActive={isSafetyActive}>
+            {isSafetyActive ? "ACTIVE" : "INACTIVE"}
+          </StatusPill>
         </StatusRow>
 
         <StatusRow>
@@ -127,15 +145,19 @@ const MemberDetails = ({ member, onUnlink = () => {} }) => {
             </AlertIcon>
             <RowLabel>Security Alerts</RowLabel>
           </div>
-          <StatusPill>ACTIVE</StatusPill>
+          <StatusPill $isActive={isSecurityActive}>
+            {isSecurityActive ? "ACTIVE" : "INACTIVE"}
+          </StatusPill>
         </StatusRow>
 
         <ActionGroup>
-          <SecondaryButton>Snooze</SecondaryButton>
-          <SecondaryButton>Block</SecondaryButton>
+          <SecondaryButton disabled>Snooze</SecondaryButton>
+          <SecondaryButton disabled>Block</SecondaryButton>
         </ActionGroup>
 
-        <UnlinkButton onClick={handleUnlink}>Unlink</UnlinkButton>
+        <UnlinkButton onClick={handleUnlink} disabled>
+          Unlink
+        </UnlinkButton>
         <Note>
           Unlinking temporarily pauses alert and location sharing between both
           accounts. The member remains in your Safety Network and can be

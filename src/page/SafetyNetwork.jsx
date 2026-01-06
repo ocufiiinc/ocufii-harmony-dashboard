@@ -1,5 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
+import { useUser } from "../context/UserContext";
+import {
+  getSafetyNetworkMembers,
+  getSafetyNetworkMemberDetails,
+} from "../api/SafetyNetworkApi";
 import DashboardLayout from "../Layout/DashboardLayout";
 import { DashboardContent } from "../styles/Dashboard.styled";
 import { MdEmail, MdDelete, MdLink, MdChevronRight } from "react-icons/md";
@@ -36,19 +42,53 @@ import MemberDetails from "../components/MemberDetails";
 
 const SafetyNetwork = () => {
   const navigate = useNavigate();
+  const { user } = useUser();
   const [openAccordion, setOpenAccordion] = useState(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedMember, setSelectedMember] = useState(null);
 
-  // Sample data - replace with API call later
-  const [members, setMembers] = useState([
-    {
-      id: 1,
-      name: "Leslie W.",
-      email: "lwinters@ocufii.com",
-      status: "PENDING",
-    },
-  ]);
+  // Fetch safety network members
+  const { data: safetyNetworkData, isLoading } = useQuery({
+    queryKey: ["safetyNetworkMembers", user?.email],
+    queryFn: () => getSafetyNetworkMembers(user?.email),
+    enabled: !!user?.email,
+    refetchInterval: 60000, // Refetch every 1 minute
+    staleTime: 30000, // Cache for 30 seconds
+  });
+
+  // Transform API data to component format
+  const members =
+    safetyNetworkData?.safetyLinks?.map((link, index) => ({
+      id: index + 1,
+      name: link.recipientName || link.linkedMember,
+      email: link.linkedMember,
+      status:
+        link.userStatus === 0
+          ? "PENDING"
+          : link.userStatus === 1
+          ? "LINKED"
+          : "UNLINKED",
+      enableLocation: link.enableLocation,
+      enableSafety: link.enableSafety,
+      enableSecurity: link.enableSecurity,
+      userType: link.userType,
+      dateCreated: link.dateCreated,
+      dateUpdated: link.dateUpdated,
+      notificationStatus: link.notificationStatus,
+      senderName: link.senderName,
+      snoozeEndTime: link.snoozeEndTime,
+      snoozeStartTime: link.snoozeStartTime,
+    })) || [];
+
+  // Fetch member details when accordion opens
+  const openMember = members.find((m) => m.id === openAccordion);
+  const { data: memberDetails, isLoading: isLoadingDetails } = useQuery({
+    queryKey: ["safetyNetworkMemberDetails", user?.email, openMember?.email],
+    queryFn: () =>
+      getSafetyNetworkMemberDetails(user?.email, openMember?.email),
+    enabled: !!user?.email && !!openMember?.email,
+    staleTime: 30000,
+  });
 
   const toggleAccordion = (id) => {
     setOpenAccordion(openAccordion === id ? null : id);
@@ -69,7 +109,8 @@ const SafetyNetwork = () => {
   };
 
   const handleConfirmDelete = (id) => {
-    setMembers((prev) => prev.filter((m) => m.id !== id));
+    // TODO: Implement API call to delete member
+    console.log("Delete member with id:", id);
     setSelectedMember(null);
     setShowDeleteModal(false);
   };
@@ -107,7 +148,11 @@ const SafetyNetwork = () => {
             </ActionButton>
           </ButtonGroup>
 
-          {members.length === 0 ? (
+          {isLoading ? (
+            <EmptyState>
+              <EmptyStateText>Loading members...</EmptyStateText>
+            </EmptyState>
+          ) : members.length === 0 ? (
             <EmptyState>
               <EmptyStateText>No Members in Your List</EmptyStateText>
             </EmptyState>
@@ -149,15 +194,21 @@ const SafetyNetwork = () => {
                   </MemberHeader>
                   <AccordionContent $isOpen={openAccordion === member.id}>
                     <AccordionBody>
-                      <MemberDetails
-                        member={member}
-                        onUnlink={() => {
-                          // simple unlink => remove or perform unlink action
-                          setMembers((prev) =>
-                            prev.filter((m) => m.id !== member.id)
-                          );
-                        }}
-                      />
+                      {isLoadingDetails ? (
+                        <div style={{ padding: "20px", textAlign: "center" }}>
+                          Loading details...
+                        </div>
+                      ) : (
+                        <MemberDetails
+                          member={member}
+                          outbound={memberDetails?.data?.outbound}
+                          inbound={memberDetails?.data?.inbound}
+                          onUnlink={() => {
+                            // TODO: Implement API call to unlink member
+                            console.log("Unlink member:", member.email);
+                          }}
+                        />
+                      )}
                     </AccordionBody>
                   </AccordionContent>
                 </MemberItem>

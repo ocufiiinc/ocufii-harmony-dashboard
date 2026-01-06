@@ -154,8 +154,8 @@ export const Note = styled.p`
 `;
 
 export const StatusPill = styled.span`
-  background: #d4edda;
-  color: #155724;
+  background: ${(props) => (props.$isActive ? "#d4edda" : "#f8d7da")};
+  color: ${(props) => (props.$isActive ? "#155724" : "#F00")};
   padding: 6px 14px;
   border-radius: 12px;
   font-weight: 600;

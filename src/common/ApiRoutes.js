@@ -24,4 +24,6 @@ export const APIROUTES = {
   GET_RECIPIENTS: (email) => `/UserNotify/GetRecipients?email=${email}`,
   GET_SAFETY_NETWORK_MEMBERS: (email) =>
     `/SafetyLink/GetMembers?email=${email}`,
+  GET_SAFETY_NETWORK_MEMBER_DETAILS: (email, memberEmail) =>
+    `/SafetyLink/GetLinkDetails?email=${email}&linkedMember=${memberEmail}`,
 };
