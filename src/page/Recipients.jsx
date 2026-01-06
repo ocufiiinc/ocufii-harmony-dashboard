@@ -7,6 +7,7 @@ import { getRecipients } from "../api/RecipientsApi";
 import { DashboardContent } from "../styles/Dashboard.styled";
 import { MdChevronRight, MdDelete } from "react-icons/md";
 import RecipientDetails from "../components/RecipientDetails";
+import deleteImg from "../assets/images/delete.svg";
 import { ROUTE } from "../common/Routes";
 import {
   RecipientsContainer,
@@ -116,8 +117,19 @@ const Recipients = () => {
                       </StatusBadge>
                     </AccordionLeft>
                     <AccordionRight>
-                      <DeleteButton onClick={() => handleDelete(recipient.id)}>
-                        <MdDelete />
+                      <DeleteButton
+                        onClick={() => handleDelete(recipient.id)}
+                        disabled
+                      >
+                        <img
+                          src={deleteImg}
+                          alt="delete"
+                          style={{
+                            width: 20,
+                            height: 20,
+                            objectFit: "contain",
+                          }}
+                        />
                       </DeleteButton>
                     </AccordionRight>
                   </AccordionHeader>

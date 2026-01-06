@@ -179,7 +179,10 @@ const SafetyNetwork = () => {
                       </MemberInfo>
                     </MemberLeft>
                     <MemberRight>
-                      <DeleteButton onClick={() => handleDelete(member.id)}>
+                      <DeleteButton
+                        onClick={() => handleDelete(member.id)}
+                        disabled
+                      >
                         <img
                           src={deleteImg}
                           alt="delete"
