@@ -26,4 +26,5 @@ export const APIROUTES = {
     `/SafetyLink/GetMembers?email=${email}`,
   GET_SAFETY_NETWORK_MEMBER_DETAILS: (email, memberEmail) =>
     `/SafetyLink/GetLinkDetails?email=${email}&linkedMember=${memberEmail}`,
+  GET_USER_SETTINGS: (email) => `/Dashboard/settings?email=${email}`,
 };

@@ -1,6 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import DashboardLayout from "../Layout/DashboardLayout";
 import Switch from "react-ios-switch";
+import { useUser } from "../context/UserContext";
+import { getUserSettings } from "../api/SettingsApi";
 import {
   SettingsContainer,
   SettingsHeader,
@@ -21,6 +24,7 @@ import {
 } from "../styles/Settings.styled";
 
 const Settings = () => {
+  const { user } = useUser();
   const [language, setLanguage] = useState("English");
   const [notifications, setNotifications] = useState({
     urgentBeaconMovementSound: true,
@@ -31,6 +35,40 @@ const Settings = () => {
   });
   const [autoLogout, setAutoLogout] = useState(true);
   const [logoutTime, setLogoutTime] = useState("5");
+
+  // Fetch user settings
+  const { data: userSettingsData } = useQuery({
+    queryKey: ["userSettings", user?.email],
+    queryFn: () => getUserSettings(user?.email),
+    enabled: !!user?.email,
+    refetchInterval: 60000,
+    staleTime: 30000,
+  });
+
+  // Update state when API data is loaded
+  useEffect(() => {
+    if (userSettingsData?.data) {
+      const settings = userSettingsData.data;
+
+      // Update auto logout settings
+      setAutoLogout(settings.autoLogout === "1");
+      if (settings.autoLogoutInterval) {
+        setLogoutTime(settings.autoLogoutInterval);
+      }
+
+      // Update notification settings
+      setNotifications((prev) => ({
+        ...prev,
+        urgentBeaconMovementSound: settings.movementSound === "1",
+        defaultTone: settings.sound === "DEFAULT" || settings.sound === null,
+        fireAlarm: settings.sound === "FIRE",
+        emergencyAlarm: settings.sound === "EMERGENCY",
+        urgentBeaconMovementVibration:
+          settings.movementVibration === "1" ||
+          settings.movementVibration === true,
+      }));
+    }
+  }, [userSettingsData]);
 
   const handleNotificationToggle = (key) => {
     setNotifications({
