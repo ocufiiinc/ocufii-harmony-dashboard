@@ -1,4 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
+import moment from "moment";
+import { useUser } from "../context/UserContext";
+import { getAlertSummary } from "../api/DashboardApi";
 import { DashboardContent } from "../styles/Dashboard.styled";
 import DashboardLayout from "../Layout/DashboardLayout";
 import {
@@ -44,11 +48,35 @@ import AcknowledgeImage from "../assets/images/Like.png";
 import ResolvedImage from "../assets/images/done2.png";
 
 const History = () => {
+  const { user } = useUser();
   const [selectedFilter, setSelectedFilter] = useState("lastWeek");
 
   const handleFilterChange = (e) => {
     setSelectedFilter(e.target.value);
   };
+
+  // TanStack Query for alert summary with dynamic time range
+  const { data: alertSummaryApiData } = useQuery({
+    queryKey: ["alertSummary", user?.email, selectedFilter],
+    queryFn: () => {
+      const endDateTime = moment().toISOString();
+      let startDateTime;
+
+      if (selectedFilter === "lastMonth") {
+        startDateTime = moment().subtract(1, "month").toISOString();
+      } else if (selectedFilter === "last3Months") {
+        startDateTime = moment().subtract(3, "months").toISOString();
+      } else {
+        // Default to lastWeek
+        startDateTime = moment().subtract(7, "days").toISOString();
+      }
+
+      return getAlertSummary(user?.email, startDateTime, endDateTime);
+    },
+    enabled: !!user?.email,
+    refetchInterval: 60000, // Refetch every 1 minute
+    staleTime: 60000, // Cache for 1 minute
+  });
 
   // Dummy device data for System Summary
   const deviceData = [
@@ -90,45 +118,49 @@ const History = () => {
     },
   ];
 
+  console.log("Alert Summary Data:", alertSummaryApiData);
   // Stats data based on selected filter
-  const statsData = [
-    {
-      id: 1,
-      title: "Safety",
-      value: 20,
-      image: SafetyImage,
-    },
-    {
-      id: 2,
-      title: "Security",
-      value: 33,
-      image: SecurityImage,
-    },
-    {
-      id: 3,
-      title: "System",
-      value: 56,
-      image: SystemImage,
-    },
-    {
-      id: 4,
-      title: "Open",
-      value: 190,
-      image: OpenImage,
-    },
-    {
-      id: 5,
-      title: "Acknowledged",
-      value: 56,
-      image: AcknowledgeImage,
-    },
-    {
-      id: 6,
-      title: "Resolved",
-      value: 300,
-      image: ResolvedImage,
-    },
-  ];
+  const statsData = useMemo(
+    () => [
+      {
+        id: 1,
+        title: "Safety",
+        value: alertSummaryApiData?.data?.safetyCount || 0,
+        image: SafetyImage,
+      },
+      {
+        id: 2,
+        title: "Security",
+        value: alertSummaryApiData?.data?.securityCount || 0,
+        image: SecurityImage,
+      },
+      {
+        id: 3,
+        title: "System",
+        value: alertSummaryApiData?.data?.systemCount || 0,
+        image: SystemImage,
+      },
+      {
+        id: 4,
+        title: "Open",
+        value: alertSummaryApiData?.data?.openCount || 0,
+        image: OpenImage,
+      },
+      {
+        id: 5,
+        title: "Acknowledged",
+        value: alertSummaryApiData?.data?.acknowledgedCount || 0,
+        image: AcknowledgeImage,
+      },
+      {
+        id: 6,
+        title: "Resolved",
+        value: alertSummaryApiData?.data?.resolvedCount || 0,
+        image: ResolvedImage,
+      },
+    ],
+    [alertSummaryApiData]
+  );
 
   return (
     <DashboardLayout>

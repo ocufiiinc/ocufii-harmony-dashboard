@@ -94,7 +94,7 @@ const Dashboard = () => {
       return getAlertSummary(user?.email, startDateTime, endDateTime);
     },
     enabled: !!user?.email,
-    refetchInterval: 120000, // Refetch every 2 minutes
+    refetchInterval: 60000, // Refetch every 1 minute
     staleTime: 60000, // Cache for 1 minute
   });
 
@@ -103,7 +103,7 @@ const Dashboard = () => {
     queryKey: ["deviceHealth", user?.email],
     queryFn: () => getDeviceHealth(user?.email),
     enabled: !!user?.email,
-    refetchInterval: 120000, // Refetch every 2 minutes
+    refetchInterval: 60000, // Refetch every 1 minute
     staleTime: 60000, // Cache for 1 minute
   });
 
