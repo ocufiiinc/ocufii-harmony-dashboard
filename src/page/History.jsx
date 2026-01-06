@@ -2,10 +2,16 @@ import React, { useState, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import moment from "moment";
 import { useUser } from "../context/UserContext";
-import { getAlertSummary, getDashboard } from "../api/DashboardApi";
+import {
+  getAlertSummary,
+  getDashboard,
+  getDeviceHealth,
+} from "../api/DashboardApi";
 import { getSafetyAlertIcon, getDeviceIcon } from "../utility/DeviceMapping";
+import { formatDateTime } from "../utility/TimeFormat";
 import { DashboardContent } from "../styles/Dashboard.styled";
 import DashboardLayout from "../Layout/DashboardLayout";
+import downloadImg from "../assets/images/download.png";
 import {
   HistoryContainer,
   HistoryHeader,
@@ -104,45 +110,29 @@ const History = () => {
     staleTime: 60000, // Cache for 1 minute
   });
 
-  // Dummy device data for System Summary
-  const deviceData = [
-    {
-      icon: baseStationImg,
-      count: 9,
-      name: "HUBS",
-      online: 9,
-      offline: 2,
-      snooze: 1,
-      offlineTime: "2 hrs ago",
-    },
-    {
-      icon: beaconImg,
-      count: 3,
-      name: "BEACONS",
-      online: 3,
-      offline: 0,
-      snooze: 2,
-      offlineTime: "N/A",
-    },
-    {
-      icon: lockImg,
-      count: 5,
-      name: "LOCKS",
-      online: 5,
-      offline: 3,
-      snooze: 4,
-      offlineTime: "5 hrs ago",
-    },
-    {
-      icon: safetyCardImg,
-      count: 2,
-      name: "SAFETY BUTTONS",
-      online: 2,
-      offline: 0,
-      snooze: 0,
-      offlineTime: "N/A",
-    },
-  ];
+  // TanStack Query for device health
+  const { data: deviceHealthApiData } = useQuery({
+    queryKey: ["deviceHealth", user?.email],
+    queryFn: () => getDeviceHealth(user?.email),
+    enabled: !!user?.email,
+    refetchInterval: 60000, // Refetch every 1 minute
+    staleTime: 60000, // Cache for 1 minute
+  });
+
+  // Transform device health API data
+  const deviceData = useMemo(() => {
+    return (deviceHealthApiData?.data || []).map((device) => ({
+      icon: getDeviceIcon(device.deviceType.toString()),
+      count: device.totalCount,
+      name: device.deviceTypeName,
+      online: device.onlineCount,
+      offline: device.offlineCount,
+      snooze: device.snoozeCount,
+      offlineTime: device.lastOnlineTime
+        ? formatDateTime(device.lastOnlineTime)
+        : "N/A",
+    }));
+  }, [deviceHealthApiData]);
 
   // Stats data based on selected filter
   const statsData = useMemo(
@@ -265,6 +255,7 @@ const History = () => {
                           <StatValue $status="offline">
                             {device.offline}
                           </StatValue>
+                          <StatTime>{device.offlineTime}</StatTime>
                         </StatColumn>
                         <StatColumn>
                           <StatLabel>Snooze</StatLabel>
@@ -280,24 +271,37 @@ const History = () => {
                 <DownloadSection>
                   <p>Download System Summary</p>
                   <ButtonGroup>
-                    <DownloadButton onClick={() => console.log("Download PDF")}>
-                      <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
-                      </svg>
+                    <DownloadButton
+                      onClick={() => console.log("Download PDF")}
+                      disabled
+                    >
+                      <img
+                        src={downloadImg}
+                        alt="download"
+                        style={{ width: 18, height: 18, marginRight: 8 }}
+                      />
                       PDF
                     </DownloadButton>
-                    <DownloadButton onClick={() => console.log("Download CSV")}>
-                      <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
-                      </svg>
+                    <DownloadButton
+                      onClick={() => console.log("Download CSV")}
+                      disabled
+                    >
+                      <img
+                        src={downloadImg}
+                        alt="download"
+                        style={{ width: 18, height: 18, marginRight: 8 }}
+                      />
                       CSV
                     </DownloadButton>
                     <DownloadButton
                       onClick={() => console.log("Download Excel")}
+                      disabled
                     >
-                      <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
-                      </svg>
+                      <img
+                        src={downloadImg}
+                        alt="download"
+                        style={{ width: 18, height: 18, marginRight: 8 }}
+                      />
                       EXCEL
                     </DownloadButton>
                   </ButtonGroup>
@@ -391,24 +395,37 @@ const History = () => {
                 <DownloadSection>
                   <p>Download Alert Histories</p>
                   <ButtonGroup>
-                    <DownloadButton onClick={() => console.log("Download PDF")}>
-                      <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
-                      </svg>
+                    <DownloadButton
+                      onClick={() => console.log("Download PDF")}
+                      disabled
+                    >
+                      <img
+                        src={downloadImg}
+                        alt="download"
+                        style={{ width: 18, height: 18, marginRight: 8 }}
+                      />
                       PDF
                     </DownloadButton>
-                    <DownloadButton onClick={() => console.log("Download CSV")}>
-                      <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
-                      </svg>
+                    <DownloadButton
+                      onClick={() => console.log("Download CSV")}
+                      disabled
+                    >
+                      <img
+                        src={downloadImg}
+                        alt="download"
+                        style={{ width: 18, height: 18, marginRight: 8 }}
+                      />
                       CSV
                     </DownloadButton>
                     <DownloadButton
                       onClick={() => console.log("Download Excel")}
+                      disabled
                     >
-                      <svg viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z" />
-                      </svg>
+                      <img
+                        src={downloadImg}
+                        alt="download"
+                        style={{ width: 18, height: 18, marginRight: 8 }}
+                      />
                       EXCEL
                     </DownloadButton>
                   </ButtonGroup>
