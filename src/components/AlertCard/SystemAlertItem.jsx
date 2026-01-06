@@ -39,7 +39,10 @@ const SystemAlertItem = ({ alert, onView, onAlertAction, isSelected }) => {
           </div>
           <div className="alert-info">
             <span className="alert-name">{alert.title}</span>
-            <span className="alert-category">WiFi Hub</span>
+            {alert.deviceType !== 1 ? null : (
+              <span className="alert-category">WiFi Hub</span>
+            )}
+
             <span className="alert-subcategory">
               {getSubcategory(alert.notificationType)}
             </span>

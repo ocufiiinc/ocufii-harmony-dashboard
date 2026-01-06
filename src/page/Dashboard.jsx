@@ -343,7 +343,7 @@ const Dashboard = () => {
                     alerts={activeAlerts.safety.alerts}
                     onViewAll={() => handleViewAll("safety")}
                   >
-                    {activeAlerts.safety.alerts.slice(0, 3).map((alert) => (
+                    {activeAlerts.safety.alerts.map((alert) => (
                       <div
                         key={alert.id}
                         onClick={() => handleAlertClick(alert, "safety")}
@@ -396,8 +396,9 @@ const Dashboard = () => {
                     color={"rgba(225, 6, 0, 1)"}
                     count={activeAlerts.security.count}
                     alerts={activeAlerts.security.alerts}
+                    onViewAll={() => handleViewAll("security")}
                   >
-                    {activeAlerts.security.alerts.slice(0, 3).map((alert) => (
+                    {activeAlerts.security.alerts.map((alert) => (
                       <div
                         key={alert.id}
                         onClick={() => handleAlertClick(alert, "security")}
@@ -426,8 +427,9 @@ const Dashboard = () => {
                     color={"rgba(252, 196, 0, 1)"}
                     count={activeAlerts.system.count}
                     alerts={activeAlerts.system.alerts}
+                    onViewAll={() => handleViewAll("system")}
                   >
-                    {activeAlerts.system.alerts.slice(0, 3).map((alert) => (
+                    {activeAlerts.system.alerts.map((alert) => (
                       <div
                         key={alert.id}
                         onClick={() => handleAlertClick(alert, "system")}

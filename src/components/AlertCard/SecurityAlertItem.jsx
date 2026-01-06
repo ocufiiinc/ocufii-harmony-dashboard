@@ -13,7 +13,9 @@ const SecurityAlertItem = ({ alert, onView, onAlertAction, isSelected }) => {
           </div>
           <div className="alert-info">
             <span className="alert-name">{alert.title}</span>
-            <span className="alert-category">{alert.location}</span>
+            <span className="alert-category">
+              {alert.gatewayName ? alert.gatewayName : "Wifi Hub"}
+            </span>
             <span className="alert-subcategory">
               {alert.notificationReason}
             </span>
