@@ -513,3 +513,62 @@ export const AlertButtonLabel = styled.span`
   color: #212529;
   font-family: "Decimal", sans-serif;
 `;
+
+export const AlertExpandedContent = styled.div`
+  margin-top: 12px;
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 8px;
+`;
+
+export const AlertMessageLabel = styled.div`
+  font-size: 13px;
+  font-weight: 500;
+  color: #6c757d;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-family: "Decimal", sans-serif;
+`;
+
+export const AlertMessageBox = styled.textarea`
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ced4da;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #212529;
+  font-family: "Decimal", sans-serif;
+  line-height: 1.5;
+  resize: vertical;
+  min-height: 80px;
+  margin-bottom: 16px;
+
+  &:focus {
+    outline: none;
+    border-color: #007bff;
+  }
+
+  &::placeholder {
+    color: #adb5bd;
+  }
+`;
+
+export const AlertOptionRow = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-top: 1px solid #e9ecef;
+
+  &:first-of-type {
+    padding-top: 0;
+    border-top: none;
+  }
+`;
+
+export const AlertOptionLabel = styled.span`
+  font-size: 15px;
+  color: #212529;
+  font-family: "Decimal", sans-serif;
+`;
