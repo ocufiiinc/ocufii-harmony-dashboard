@@ -236,8 +236,18 @@ const Login = () => {
           <FooterText>Ocufii 2025, All rights reserved</FooterText>
           <FooterLinks>
             <FooterLink href="#">v {AppVersion}</FooterLink>
-            <FooterLink href="#terms">Terms of Use</FooterLink>
-            <FooterLink href="#privacy">
+            <FooterLink
+              href="https://www.ocufii.com/terms-of-service/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Terms of Use
+            </FooterLink>
+            <FooterLink
+              href="https://www.ocufii.com/privacy-policy/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               Personal Data Processing Policy
             </FooterLink>
           </FooterLinks>

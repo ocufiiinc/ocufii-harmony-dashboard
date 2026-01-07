@@ -176,6 +176,10 @@ const DashboardLayout = ({ children }) => {
                     // open shop in new tab
                     window.open(item.path, "_blank", "noopener,noreferrer");
                     setIsSidebarOpen(false);
+                  } else if (item.id === "help") {
+                    // open shop in new tab
+                    window.open(item.path, "_blank", "noopener,noreferrer");
+                    setIsSidebarOpen(false);
                   } else {
                     handleNavigation(item.path);
                   }

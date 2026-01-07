@@ -6,7 +6,7 @@ export const ROUTE = {
   HISTORY: "/history",
   RECIPIENTS: "/recipients",
   SHOP: "https://ocufiistore.com/",
-  HELP: "/help",
+  HELP: "https://www.ocufii.com/",
   DEVICEDETAILS: "/device_details",
   ACCOUNT: "/account",
   SETTINGS: "/settings",
