@@ -210,7 +210,7 @@ const Alerts = () => {
                     data={safetyAlerts}
                     onView={handleViewAlert}
                     onAction={handleAlertAction}
-                    actionButtonText="Action"
+                    actionButtonText="Alert Action"
                     actionButtonColor="#007bff"
                   />
                 )}
@@ -224,7 +224,7 @@ const Alerts = () => {
                     headerColor="rgba(255, 0, 0, 1)"
                     data={securityAlerts}
                     onAction={handleAlertAction}
-                    actionButtonText="Action"
+                    actionButtonText="AlertAction"
                     actionButtonColor="#007bff"
                   />
                 )}
@@ -238,7 +238,7 @@ const Alerts = () => {
                     headerColor="rgba(252, 196, 0, 1)"
                     data={systemAlerts}
                     onAction={handleAlertAction}
-                    actionButtonText="Action"
+                    actionButtonText="AlertAction"
                     actionButtonColor="#007bff"
                   />
                 )}
@@ -251,9 +251,8 @@ const Alerts = () => {
                     count={openAlerts.length}
                     headerColor="rgba(237, 139, 0, 1)"
                     data={openAlerts}
-                    onView={handleViewAlert}
                     onAction={handleAlertAction}
-                    actionButtonText="Action"
+                    actionButtonText="AlertAction"
                     actionButtonColor="#007bff"
                   />
                 )}
@@ -266,9 +265,8 @@ const Alerts = () => {
                     count={acknowledgeAlerts.length}
                     headerColor="rgba(0, 181, 226, 1)"
                     data={acknowledgeAlerts}
-                    onView={handleViewAlert}
                     onAction={handleAlertAction}
-                    actionButtonText="Action"
+                    actionButtonText="AlertAction"
                     actionButtonColor="#007bff"
                   />
                 )}
@@ -281,10 +279,8 @@ const Alerts = () => {
                     count={resolvedAlerts.length}
                     headerColor="rgba(54, 190, 167, 1)"
                     data={resolvedAlerts}
-                    onView={handleViewAlert}
-                    onAction={handleAlertAction}
-                    actionButtonText="Action"
                     actionButtonColor="#007bff"
+                    showActionButton={false}
                   />
                 )}
               </AlertsMainContent>

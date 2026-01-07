@@ -80,7 +80,7 @@ const PersonalSafetyService = () => {
   };
 
   const handleManageSafetyNetwork = () => {
-    navigate(ROUTE.SAFETYNETWORK);
+    navigate(ROUTE.SAFETY_NETWORK);
   };
 
   return (
@@ -141,10 +141,7 @@ const PersonalSafetyService = () => {
           )}
 
           {/* Personal Monitored Safety Alerts - People */}
-          <AlertSection
-            onClick={() => setShowPersonalModal(true)}
-            style={{ cursor: "pointer" }}
-          >
+          <AlertSection style={{ cursor: "pointer" }}>
             <AlertHeader>
               <AlertTitle>
                 <AlertTitleText>
@@ -152,7 +149,7 @@ const PersonalSafetyService = () => {
                 </AlertTitleText>
               </AlertTitle>
               <AlertRight>
-                <InfoIcon>
+                <InfoIcon onClick={() => setShowPersonalModal(true)}>
                   <MdInfo />
                 </InfoIcon>
                 <MdChevronRight size={24} color="#6c757d" />
@@ -164,10 +161,7 @@ const PersonalSafetyService = () => {
           </AlertSection>
 
           {/* Professional Monitored Safety Alerts - Dispatch */}
-          <AlertSection
-            onClick={() => setShowProfessionalModal(true)}
-            style={{ cursor: "pointer" }}
-          >
+          <AlertSection style={{ cursor: "pointer" }}>
             <AlertHeader>
               <AlertTitle>
                 <AlertTitleText>
@@ -175,7 +169,7 @@ const PersonalSafetyService = () => {
                 </AlertTitleText>
               </AlertTitle>
               <AlertRight>
-                <InfoIcon>
+                <InfoIcon onClick={() => setShowProfessionalModal(true)}>
                   <MdInfo />
                 </InfoIcon>
                 <MdChevronRight size={24} color="#6c757d" />

@@ -30,8 +30,9 @@ const AlertTable = ({
   data = [],
   onAction,
   onView,
-  actionButtonText = "Action",
+  actionButtonText = "Alert Action",
   actionButtonColor = "#007bff",
+  showActionButton = true,
 }) => {
   const [currentPage, setCurrentPage] = React.useState(1);
   const [showNoLocationModal, setShowNoLocationModal] = useState(false);
@@ -128,7 +129,9 @@ const AlertTable = ({
             <TableHeaderCell>Alert</TableHeaderCell>
             <TableHeaderCell>Time</TableHeaderCell>
             <TableHeaderCell>Date</TableHeaderCell>
-            <TableHeaderCell>Action Button</TableHeaderCell>
+            {showActionButton && (
+              <TableHeaderCell>Action Button</TableHeaderCell>
+            )}
           </TableRow>
         </TableHead>
         <tbody>
@@ -144,45 +147,47 @@ const AlertTable = ({
                 </AlertCell>
                 <TableCell>{row.time}</TableCell>
                 <TableCell>{row.date}</TableCell>
-                <TableCell>
-                  <div style={{ display: "flex", gap: "12px" }}>
-                    {onView && (
+                {showActionButton && (
+                  <TableCell>
+                    <div style={{ display: "flex", gap: "12px" }}>
+                      {onView && (
+                        <PrimaryButton
+                          size="small"
+                          color={actionButtonColor}
+                          onClick={() => {
+                            const hasValidLocation =
+                              row.lat &&
+                              row.lng &&
+                              row.lat !== "" &&
+                              row.lng !== "";
+                            if (!hasValidLocation) {
+                              setShowNoLocationModal(true);
+                            } else {
+                              onView && onView(row, startIndex + index);
+                            }
+                          }}
+                        >
+                          View
+                        </PrimaryButton>
+                      )}
                       <PrimaryButton
                         size="small"
                         color={actionButtonColor}
-                        onClick={() => {
-                          const hasValidLocation =
-                            row.lat &&
-                            row.lng &&
-                            row.lat !== "" &&
-                            row.lng !== "";
-                          if (!hasValidLocation) {
-                            setShowNoLocationModal(true);
-                          } else {
-                            onView && onView(row, startIndex + index);
-                          }
-                        }}
+                        onClick={() =>
+                          onAction && onAction(row, startIndex + index)
+                        }
                       >
-                        View
+                        {actionButtonText}
                       </PrimaryButton>
-                    )}
-                    <PrimaryButton
-                      size="small"
-                      color={actionButtonColor}
-                      onClick={() =>
-                        onAction && onAction(row, startIndex + index)
-                      }
-                    >
-                      {actionButtonText}
-                    </PrimaryButton>
-                  </div>
-                </TableCell>
+                    </div>
+                  </TableCell>
+                )}
               </TableRow>
             ))
           ) : (
             <TableRow>
               <TableCell
-                colSpan={5}
+                colSpan={showActionButton ? 5 : 4}
                 style={{ textAlign: "center", padding: "2rem" }}
               >
                 No alerts available
