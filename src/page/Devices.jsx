@@ -135,10 +135,10 @@ const Devices = () => {
       avatar: safettyCardImg,
       name: card.name,
       status: card.status,
-      location: card.location || "View Location",
-      cellularNetwork: card.cellularNetwork || "",
+      location: card.location || "N/A",
+      cellularNetwork: card.cellularNetwork || "N/A",
       macAddress: card.macAddress,
-      battery: `${card.battery}%`,
+      battery: `${card.battery ? `${card.battery}%` : "N/A"}`,
       cardSettings: "Settings",
       safetyCard: true,
     }));

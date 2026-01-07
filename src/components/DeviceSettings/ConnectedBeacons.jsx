@@ -71,7 +71,9 @@ const ConnectedBeacons = ({ beacons, onBack }) => {
                   {beacon.location === "" ? "N/A" : beacon.location}
                 </BeaconsTableCell>
                 <BeaconsTableCell>{beacon.macAddress}</BeaconsTableCell>
-                <BeaconsTableCell>{beacon.battery} %</BeaconsTableCell>
+                <BeaconsTableCell>
+                  {beacon.battery ? `${beacon.battery} %` : "N/A"}
+                </BeaconsTableCell>
               </BeaconsTableRow>
             ))}
           </BeaconsTableBody>
