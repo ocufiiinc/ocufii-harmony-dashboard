@@ -1,9 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import DashboardLayout from "../Layout/DashboardLayout";
 import { DashboardContent } from "../styles/Dashboard.styled";
 import { MdChevronRight, MdInfo } from "react-icons/md";
+import Switch from "react-ios-switch";
 import PersonalSafetyModal from "../components/PersonalSafetyModal";
+import AlertButtonsSettings from "../components/AlertButtonsSettings/AlertButtonsSettings";
 import {
   SafetyContainer,
   PageTitle,
@@ -41,6 +44,8 @@ import {
 } from "../styles/PersonalSafety.styled";
 import { ROUTE } from "../common/Routes";
 import { useUser } from "../context/UserContext";
+import { getUserSettings } from "../api/SettingsApi";
+import ProfessionalSafetyButton from "../components/AlertButtonsSettings/ProfessionalSafetyButton";
 
 const PersonalSafetyService = () => {
   const navigate = useNavigate();
@@ -50,6 +55,32 @@ const PersonalSafetyService = () => {
   const [showNameMessage, setShowNameMessage] = useState(false);
   const [showPersonalModal, setShowPersonalModal] = useState(false);
   const [showProfessionalModal, setShowProfessionalModal] = useState(false);
+  const [isPersonalAlertsOpen, setIsPersonalAlertsOpen] = useState(false);
+  const [isProfessionalAlertsOpen, setIsProfessionalAlertsOpen] =
+    useState(false);
+  const [alertSettings, setAlertSettings] = useState({
+    autoDial911: false,
+    autoDial988: false,
+    emergency: false,
+    activeShooter: false,
+    feelingUnsafe: false,
+  });
+  const [professionalAlertSettings, setProfessionalAlertSettings] = useState({
+    police: false,
+    medicalService: false,
+    fire: false,
+    activeShooter: false,
+    feelingUnsafe: false,
+  });
+
+  const handleAlertToggle = (key) => {
+    setAlertSettings({
+      ...alertSettings,
+      [key]: !alertSettings[key],
+    });
+    // TODO: Implement API call to update settings
+    console.log(`Toggle ${key} to ${!alertSettings[key]}`);
+  };
 
   const handleChangeName = () => {
     setIsEditingName(true);
@@ -142,27 +173,54 @@ const PersonalSafetyService = () => {
 
           {/* Personal Monitored Safety Alerts - People */}
           <AlertSection style={{ cursor: "pointer" }}>
-            <AlertHeader>
+            <AlertHeader
+              onClick={() => setIsPersonalAlertsOpen(!isPersonalAlertsOpen)}
+            >
               <AlertTitle>
                 <AlertTitleText>
                   Personal Monitored Safety Alerts
                 </AlertTitleText>
               </AlertTitle>
               <AlertRight>
-                <InfoIcon onClick={() => setShowPersonalModal(true)}>
+                <InfoIcon
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowPersonalModal(true);
+                  }}
+                >
                   <MdInfo />
                 </InfoIcon>
-                <MdChevronRight size={24} color="#6c757d" />
+                <MdChevronRight
+                  size={24}
+                  color="#6c757d"
+                  style={{
+                    transform: isPersonalAlertsOpen
+                      ? "rotate(90deg)"
+                      : "rotate(0deg)",
+                    transition: "transform 0.3s ease",
+                  }}
+                />
               </AlertRight>
             </AlertHeader>
             <AlertDescription>
               Monitored by people you invite to assist you.
             </AlertDescription>
+
+            {isPersonalAlertsOpen && (
+              <AlertButtonsSettings
+                alertSettings={alertSettings}
+                onToggle={handleAlertToggle}
+              />
+            )}
           </AlertSection>
 
           {/* Professional Monitored Safety Alerts - Dispatch */}
           <AlertSection style={{ cursor: "pointer" }}>
-            <AlertHeader>
+            <AlertHeader
+              onClick={() =>
+                setIsProfessionalAlertsOpen(!isProfessionalAlertsOpen)
+              }
+            >
               <AlertTitle>
                 <AlertTitleText>
                   Professional Monitored Safety Alerts
@@ -178,6 +236,12 @@ const PersonalSafetyService = () => {
             <AlertDescription>
               Monitored by a dispatch center when you upgrade.
             </AlertDescription>
+            {isProfessionalAlertsOpen && (
+              <ProfessionalSafetyButton
+                alertSettings={professionalAlertSettings}
+                onToggle={handleAlertToggle}
+              />
+            )}
           </AlertSection>
 
           {/* Info Text */}

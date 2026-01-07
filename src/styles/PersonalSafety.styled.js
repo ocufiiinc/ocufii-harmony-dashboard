@@ -472,3 +472,44 @@ export const CloseButton = styled.button`
     height: 24px;
   }
 `;
+
+export const AlertButtonsContainer = styled.div`
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e9ecef;
+`;
+
+export const AlertButtonsTitle = styled.div`
+  font-size: 14px;
+  font-weight: 500;
+  color: #6c757d;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-family: "Decimal", sans-serif;
+`;
+
+export const AlertButtonsList = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+`;
+
+export const AlertButtonItem = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+`;
+
+export const AlertButtonLeft = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+`;
+
+export const AlertButtonLabel = styled.span`
+  font-size: 16px;
+  color: #212529;
+  font-family: "Decimal", sans-serif;
+`;
