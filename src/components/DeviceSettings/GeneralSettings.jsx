@@ -25,7 +25,7 @@ const GeneralSettings = ({
 }) => {
   const [editingField, setEditingField] = useState(null);
   const [localFormData, setLocalFormData] = useState(formData);
-  console.log("GeneralSettings render:", deviceType);
+  // console.log("GeneralSettings render:", deviceType);
 
   const handleFieldClick = (fieldName) => {
     setEditingField(fieldName);
@@ -51,148 +51,262 @@ const GeneralSettings = ({
       <SettingsSection>
         <SectionTitle>GENERAL SETTINGS</SectionTitle>
         <SettingsList>
-          <SettingItem onClick={() => handleFieldClick("name")}>
-            <SettingItemLeft>
-              <SettingItemTitle>{deviceType} Name</SettingItemTitle>
-              <SettingItemSubtitle>
-                Enter {deviceType.toLowerCase()}'s name
-              </SettingItemSubtitle>
-            </SettingItemLeft>
-            <SettingItemRight>
-              {editingField === "name" ? (
-                <input
-                  type="text"
-                  value={localFormData.name}
-                  onChange={(e) => handleInputChange("name", e.target.value)}
-                  onBlur={handleInputBlur}
-                  autoFocus
-                  style={{
-                    border: "1px solid #ccc",
-                    borderRadius: "4px",
-                    padding: "8px 12px",
-                    fontSize: "14px",
-                    width: "200px",
-                    outline: "none",
-                  }}
-                  onClick={(e) => e.stopPropagation()}
-                />
-              ) : (
-                <>
-                  {localFormData.name}
-                  <span className="arrow">›</span>
-                </>
-              )}
-            </SettingItemRight>
-          </SettingItem>
+          {deviceType === "Card" ? (
+            <>
+              <SettingItem onClick={() => handleFieldClick("name")}>
+                <SettingItemLeft>
+                  <SettingItemTitle>Safety Card Name</SettingItemTitle>
+                  <SettingItemSubtitle>
+                    Enter safety card name
+                  </SettingItemSubtitle>
+                </SettingItemLeft>
+                <SettingItemRight>
+                  {editingField === "name" ? (
+                    <input
+                      type="text"
+                      value={localFormData.name}
+                      onChange={(e) =>
+                        handleInputChange("name", e.target.value)
+                      }
+                      onBlur={handleInputBlur}
+                      autoFocus
+                      style={{
+                        border: "1px solid #ccc",
+                        borderRadius: "4px",
+                        padding: "8px 12px",
+                        fontSize: "14px",
+                        width: "200px",
+                        outline: "none",
+                      }}
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  ) : (
+                    <>
+                      {localFormData.name}
+                      <span className="arrow">›</span>
+                    </>
+                  )}
+                </SettingItemRight>
+              </SettingItem>
 
-          <SettingItem onClick={() => handleFieldClick("location")}>
-            <SettingItemLeft>
-              <SettingItemTitle>{deviceType} Location</SettingItemTitle>
-              <SettingItemSubtitle>
-                Enter {deviceType.toLowerCase()}'s location
-              </SettingItemSubtitle>
-            </SettingItemLeft>
-            <SettingItemRight>
-              {editingField === "location" ? (
-                <input
-                  type="text"
-                  value={localFormData.location}
-                  onChange={(e) =>
-                    handleInputChange("location", e.target.value)
-                  }
-                  onBlur={handleInputBlur}
-                  autoFocus
-                  placeholder="Optional"
-                  style={{
-                    border: "1px solid #ccc",
-                    borderRadius: "4px",
-                    padding: "8px 12px",
-                    fontSize: "14px",
-                    width: "200px",
-                    outline: "none",
-                  }}
-                  onClick={(e) => e.stopPropagation()}
-                />
-              ) : (
-                <>
-                  {localFormData.location || "(Optional)"}
-                  <span className="arrow">›</span>
-                </>
-              )}
-            </SettingItemRight>
-          </SettingItem>
+              <SettingItem onClick={() => handleFieldClick("information")}>
+                <SettingItemLeft>
+                  <SettingItemTitle>Safety Card Information</SettingItemTitle>
+                  <SettingItemSubtitle>
+                    Enter safety card information
+                  </SettingItemSubtitle>
+                </SettingItemLeft>
+                <SettingItemRight>
+                  {editingField === "information" ? (
+                    <input
+                      type="text"
+                      value={localFormData.information}
+                      onChange={(e) =>
+                        handleInputChange("information", e.target.value)
+                      }
+                      onBlur={handleInputBlur}
+                      autoFocus
+                      placeholder="Optional"
+                      style={{
+                        border: "1px solid #ccc",
+                        borderRadius: "4px",
+                        padding: "8px 12px",
+                        fontSize: "14px",
+                        width: "200px",
+                        outline: "none",
+                      }}
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  ) : (
+                    <>
+                      {localFormData.information || "(Optional)"}
+                      <span className="arrow">›</span>
+                    </>
+                  )}
+                </SettingItemRight>
+              </SettingItem>
 
-          <SettingItem onClick={() => handleFieldClick("information")}>
-            <SettingItemLeft>
-              <SettingItemTitle>{deviceType} Information</SettingItemTitle>
-              <SettingItemSubtitle>
-                Enter general information about this {deviceType.toLowerCase()}
-              </SettingItemSubtitle>
-            </SettingItemLeft>
-            <SettingItemRight>
-              {editingField === "information" ? (
-                <input
-                  type="text"
-                  value={localFormData.information}
-                  onChange={(e) =>
-                    handleInputChange("information", e.target.value)
-                  }
-                  onBlur={handleInputBlur}
-                  autoFocus
-                  placeholder="Optional"
-                  style={{
-                    border: "1px solid #ccc",
-                    borderRadius: "4px",
-                    padding: "8px 12px",
-                    fontSize: "14px",
-                    width: "200px",
-                    outline: "none",
-                  }}
-                  onClick={(e) => e.stopPropagation()}
-                />
-              ) : (
-                <>
-                  {localFormData.information || "(Optional)"}
-                  <span className="arrow">›</span>
-                </>
-              )}
-            </SettingItemRight>
-          </SettingItem>
-          {deviceType !== "Hub" && (
-            <SettingItem onClick={onSnoozeClick}>
-              <SettingItemLeft>
-                <SettingItemTitle>
-                  {deviceType} Notification Snooze Mode
-                </SettingItemTitle>
-                <SettingItemSubtitle>
-                  Set this {deviceType.toLowerCase()} in snooze mode
-                </SettingItemSubtitle>
-              </SettingItemLeft>
-              <SettingItemRight>
-                <>
-                  {localFormData.snoozeEndTime !== null &&
-                  localFormData.snoozeEndTime !== ""
-                    ? "On"
-                    : "Off"}
-                  <span className="arrow">›</span>
-                </>
-              </SettingItemRight>
-            </SettingItem>
-          )}
+              <SettingItem onClick={onSnoozeClick}>
+                <SettingItemLeft>
+                  <SettingItemTitle>
+                    Safety Card Notification Snooze Mode
+                  </SettingItemTitle>
+                  <SettingItemSubtitle>
+                    Set this safety card in snooze mode
+                  </SettingItemSubtitle>
+                </SettingItemLeft>
+                <SettingItemRight>
+                  <>
+                    {localFormData.snoozeEndTime !== null &&
+                    localFormData.snoozeEndTime !== ""
+                      ? "On"
+                      : "Off"}
+                    <span className="arrow">›</span>
+                  </>
+                </SettingItemRight>
+              </SettingItem>
 
-          {deviceType === "Hub" && (
-            <SettingItem onClick={onBeaconsClick}>
-              <SettingItemLeft>
-                <SettingItemTitle>Connected Beacons</SettingItemTitle>
-                <SettingItemSubtitle>
-                  These are beacons connected to this hub
-                </SettingItemSubtitle>
-              </SettingItemLeft>
-              <SettingItemRight>
-                {deviceData.connectedBeacons || 0}
-                <span className="arrow">›</span>
-              </SettingItemRight>
-            </SettingItem>
+              <SettingItem>
+                <SettingItemLeft>
+                  <SettingItemTitle>Safety Card Configuration</SettingItemTitle>
+                  <SettingItemSubtitle>
+                    Set this safety card in configuration
+                  </SettingItemSubtitle>
+                </SettingItemLeft>
+                <SettingItemRight>
+                  <span className="arrow">›</span>
+                </SettingItemRight>
+              </SettingItem>
+            </>
+          ) : (
+            <>
+              <SettingItem onClick={() => handleFieldClick("name")}>
+                <SettingItemLeft>
+                  <SettingItemTitle>{deviceType} Name</SettingItemTitle>
+                  <SettingItemSubtitle>
+                    Enter {deviceType.toLowerCase()}'s name
+                  </SettingItemSubtitle>
+                </SettingItemLeft>
+                <SettingItemRight>
+                  {editingField === "name" ? (
+                    <input
+                      type="text"
+                      value={localFormData.name}
+                      onChange={(e) =>
+                        handleInputChange("name", e.target.value)
+                      }
+                      onBlur={handleInputBlur}
+                      autoFocus
+                      style={{
+                        border: "1px solid #ccc",
+                        borderRadius: "4px",
+                        padding: "8px 12px",
+                        fontSize: "14px",
+                        width: "200px",
+                        outline: "none",
+                      }}
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  ) : (
+                    <>
+                      {localFormData.name}
+                      <span className="arrow">›</span>
+                    </>
+                  )}
+                </SettingItemRight>
+              </SettingItem>
+
+              <SettingItem onClick={() => handleFieldClick("location")}>
+                <SettingItemLeft>
+                  <SettingItemTitle>{deviceType} Location</SettingItemTitle>
+                  <SettingItemSubtitle>
+                    Enter {deviceType.toLowerCase()}'s location
+                  </SettingItemSubtitle>
+                </SettingItemLeft>
+                <SettingItemRight>
+                  {editingField === "location" ? (
+                    <input
+                      type="text"
+                      value={localFormData.location}
+                      onChange={(e) =>
+                        handleInputChange("location", e.target.value)
+                      }
+                      onBlur={handleInputBlur}
+                      autoFocus
+                      placeholder="Optional"
+                      style={{
+                        border: "1px solid #ccc",
+                        borderRadius: "4px",
+                        padding: "8px 12px",
+                        fontSize: "14px",
+                        width: "200px",
+                        outline: "none",
+                      }}
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  ) : (
+                    <>
+                      {localFormData.location || "(Optional)"}
+                      <span className="arrow">›</span>
+                    </>
+                  )}
+                </SettingItemRight>
+              </SettingItem>
+
+              <SettingItem onClick={() => handleFieldClick("information")}>
+                <SettingItemLeft>
+                  <SettingItemTitle>{deviceType} Information</SettingItemTitle>
+                  <SettingItemSubtitle>
+                    Enter general information about this{" "}
+                    {deviceType.toLowerCase()}
+                  </SettingItemSubtitle>
+                </SettingItemLeft>
+                <SettingItemRight>
+                  {editingField === "information" ? (
+                    <input
+                      type="text"
+                      value={localFormData.information}
+                      onChange={(e) =>
+                        handleInputChange("information", e.target.value)
+                      }
+                      onBlur={handleInputBlur}
+                      autoFocus
+                      placeholder="Optional"
+                      style={{
+                        border: "1px solid #ccc",
+                        borderRadius: "4px",
+                        padding: "8px 12px",
+                        fontSize: "14px",
+                        width: "200px",
+                        outline: "none",
+                      }}
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  ) : (
+                    <>
+                      {localFormData.information || "(Optional)"}
+                      <span className="arrow">›</span>
+                    </>
+                  )}
+                </SettingItemRight>
+              </SettingItem>
+              {deviceType !== "Hub" && (
+                <SettingItem onClick={onSnoozeClick}>
+                  <SettingItemLeft>
+                    <SettingItemTitle>
+                      {deviceType} Notification Snooze Mode
+                    </SettingItemTitle>
+                    <SettingItemSubtitle>
+                      Set this {deviceType.toLowerCase()} in snooze mode
+                    </SettingItemSubtitle>
+                  </SettingItemLeft>
+                  <SettingItemRight>
+                    <>
+                      {localFormData.snoozeEndTime !== null &&
+                      localFormData.snoozeEndTime !== ""
+                        ? "On"
+                        : "Off"}
+                      <span className="arrow">›</span>
+                    </>
+                  </SettingItemRight>
+                </SettingItem>
+              )}
+
+              {deviceType === "Hub" && (
+                <SettingItem onClick={onBeaconsClick}>
+                  <SettingItemLeft>
+                    <SettingItemTitle>Connected Beacons</SettingItemTitle>
+                    <SettingItemSubtitle>
+                      These are beacons connected to this hub
+                    </SettingItemSubtitle>
+                  </SettingItemLeft>
+                  <SettingItemRight>
+                    {deviceData.connectedBeacons || 0}
+                    <span className="arrow">›</span>
+                  </SettingItemRight>
+                </SettingItem>
+              )}
+            </>
           )}
         </SettingsList>
       </SettingsSection>

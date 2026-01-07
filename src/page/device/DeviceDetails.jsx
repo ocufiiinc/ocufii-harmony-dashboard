@@ -109,6 +109,7 @@ const DeviceDetails = () => {
   };
 
   const handleSnoozeClick = () => {
+    if (deviceType == "Card") return;
     setShowSnoozeMode(true);
   };
 
@@ -156,34 +157,92 @@ const DeviceDetails = () => {
               <DeviceStatus>{deviceData.status || "Online"}</DeviceStatus>
             </DeviceHeader>
 
-            <DeviceInfoGrid>
-              <DeviceInfoItem>
-                <DeviceInfoLabel>Location:</DeviceInfoLabel>
-                <DeviceInfoValue>
-                  {deviceData.location || "N/A"}
-                </DeviceInfoValue>
-              </DeviceInfoItem>
-              <DeviceInfoItem>
-                <DeviceInfoLabel>WiFi Network:</DeviceInfoLabel>
-                <DeviceInfoValue>
-                  {deviceData.wifiNetwork || deviceData.network || "N/A"}
-                </DeviceInfoValue>
-              </DeviceInfoItem>
-              <DeviceInfoItem>
-                <DeviceInfoLabel>MAC Address:</DeviceInfoLabel>
-                <DeviceInfoValue>
-                  {deviceData.macAddress || deviceData.mac || "N/A"}
-                </DeviceInfoValue>
-              </DeviceInfoItem>
-            </DeviceInfoGrid>
+            {deviceType === "Card" ? (
+              <>
+                <DeviceInfoGrid>
+                  <DeviceInfoItem>
+                    <DeviceInfoLabel>Communication:</DeviceInfoLabel>
+                    <DeviceInfoValue>
+                      {deviceData.cellularNetwork || "N/A"}
+                    </DeviceInfoValue>
+                  </DeviceInfoItem>
+                  <DeviceInfoItem>
+                    <DeviceInfoLabel>Location:</DeviceInfoLabel>
+                    <DeviceInfoValue>
+                      {deviceData.location &&
+                      deviceData.location.trim() !== "" &&
+                      deviceData.location !== "View Location"
+                        ? deviceData.location
+                        : "N/A"}
+                    </DeviceInfoValue>
+                  </DeviceInfoItem>
+                  <DeviceInfoItem>
+                    <DeviceInfoLabel>MAC Address:</DeviceInfoLabel>
+                    <DeviceInfoValue>
+                      {deviceData.safetyCardMAC ||
+                        deviceData.macAddress ||
+                        "N/A"}
+                    </DeviceInfoValue>
+                  </DeviceInfoItem>
+                  <DeviceInfoItem>
+                    <DeviceInfoLabel>IMEI Number:</DeviceInfoLabel>
+                    <DeviceInfoValue>
+                      {deviceData.firmware || "N/A"}
+                    </DeviceInfoValue>
+                  </DeviceInfoItem>
+                </DeviceInfoGrid>
 
-            <AdvancedSection>
-              <SectionTitle>ADVANCED SETTINGS</SectionTitle>
-              <DeleteButton onClick={handleDeleteClick} disabled>
-                <img src={deleteIcon} alt="Delete" />
-                Delete {deviceType.toUpperCase()}
-              </DeleteButton>
-            </AdvancedSection>
+                <AdvancedSection>
+                  <SectionTitle>ADVANCED SETTINGS</SectionTitle>
+                  <DeleteButton
+                    style={{
+                      background: "#17a2b8",
+                      border: "2px solid #17a2b8",
+                      color: "white",
+                      marginBottom: "12px",
+                    }}
+                    disabled
+                  >
+                    Request Card Location
+                  </DeleteButton>
+                  <DeleteButton onClick={handleDeleteClick} disabled>
+                    <img src={deleteIcon} alt="Delete" />
+                    Delete Safety Card
+                  </DeleteButton>
+                </AdvancedSection>
+              </>
+            ) : (
+              <>
+                <DeviceInfoGrid>
+                  <DeviceInfoItem>
+                    <DeviceInfoLabel>Location:</DeviceInfoLabel>
+                    <DeviceInfoValue>
+                      {deviceData.location || "N/A"}
+                    </DeviceInfoValue>
+                  </DeviceInfoItem>
+                  <DeviceInfoItem>
+                    <DeviceInfoLabel>WiFi Network:</DeviceInfoLabel>
+                    <DeviceInfoValue>
+                      {deviceData.wifiNetwork || deviceData.network || "N/A"}
+                    </DeviceInfoValue>
+                  </DeviceInfoItem>
+                  <DeviceInfoItem>
+                    <DeviceInfoLabel>MAC Address:</DeviceInfoLabel>
+                    <DeviceInfoValue>
+                      {deviceData.macAddress || deviceData.mac || "N/A"}
+                    </DeviceInfoValue>
+                  </DeviceInfoItem>
+                </DeviceInfoGrid>
+
+                <AdvancedSection>
+                  <SectionTitle>ADVANCED SETTINGS</SectionTitle>
+                  <DeleteButton onClick={handleDeleteClick} disabled>
+                    <img src={deleteIcon} alt="Delete" />
+                    Delete {deviceType.toUpperCase()}
+                  </DeleteButton>
+                </AdvancedSection>
+              </>
+            )}
           </LeftSection>
 
           {/* Right Section - General Settings or Delete Confirmation */}
