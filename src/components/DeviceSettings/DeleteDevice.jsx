@@ -49,7 +49,7 @@ const DeleteDevice = ({ deviceType, deviceName, onCancel, onConfirm }) => {
 
         <ActionButtons>
           <CancelButton onClick={onCancel}>Cancel</CancelButton>
-          <DeleteConfirmButton onClick={onConfirm}>
+          <DeleteConfirmButton onClick={onConfirm} disabled={true}>
             <img src={deleteIcon} alt="Delete" />
             Delete {deviceType}
           </DeleteConfirmButton>

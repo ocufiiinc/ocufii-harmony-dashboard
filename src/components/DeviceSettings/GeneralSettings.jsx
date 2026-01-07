@@ -158,26 +158,27 @@ const GeneralSettings = ({
               )}
             </SettingItemRight>
           </SettingItem>
-
-          <SettingItem onClick={onSnoozeClick}>
-            <SettingItemLeft>
-              <SettingItemTitle>
-                {deviceType} Notification Snooze Mode
-              </SettingItemTitle>
-              <SettingItemSubtitle>
-                Set this {deviceType.toLowerCase()} in snooze mode
-              </SettingItemSubtitle>
-            </SettingItemLeft>
-            <SettingItemRight>
-              <>
-                {localFormData.snoozeEndTime !== null &&
-                localFormData.snoozeEndTime !== ""
-                  ? "On"
-                  : "Off"}
-                <span className="arrow">›</span>
-              </>
-            </SettingItemRight>
-          </SettingItem>
+          {deviceType !== "Hub" && (
+            <SettingItem onClick={onSnoozeClick}>
+              <SettingItemLeft>
+                <SettingItemTitle>
+                  {deviceType} Notification Snooze Mode
+                </SettingItemTitle>
+                <SettingItemSubtitle>
+                  Set this {deviceType.toLowerCase()} in snooze mode
+                </SettingItemSubtitle>
+              </SettingItemLeft>
+              <SettingItemRight>
+                <>
+                  {localFormData.snoozeEndTime !== null &&
+                  localFormData.snoozeEndTime !== ""
+                    ? "On"
+                    : "Off"}
+                  <span className="arrow">›</span>
+                </>
+              </SettingItemRight>
+            </SettingItem>
+          )}
 
           {deviceType === "Hub" && (
             <SettingItem onClick={onBeaconsClick}>
@@ -198,7 +199,9 @@ const GeneralSettings = ({
 
       <ActionButtons>
         <CancelButton onClick={onCancel}>Cancel</CancelButton>
-        <SaveButton onClick={handleSave}>Save Changes</SaveButton>
+        <SaveButton onClick={handleSave} disabled>
+          Save Changes
+        </SaveButton>
       </ActionButtons>
     </RightSection>
   );

@@ -179,7 +179,7 @@ const DeviceDetails = () => {
 
             <AdvancedSection>
               <SectionTitle>ADVANCED SETTINGS</SectionTitle>
-              <DeleteButton onClick={handleDeleteClick}>
+              <DeleteButton onClick={handleDeleteClick} disabled>
                 <img src={deleteIcon} alt="Delete" />
                 Delete {deviceType.toUpperCase()}
               </DeleteButton>
