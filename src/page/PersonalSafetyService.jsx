@@ -73,6 +73,73 @@ const PersonalSafetyService = () => {
     feelingUnsafe: false,
   });
 
+  // Fetch user settings
+  const { data: userSettingsData } = useQuery({
+    queryKey: ["userSettings", user?.email],
+    queryFn: () => getUserSettings(user?.email),
+    enabled: !!user?.email,
+    refetchInterval: 60000,
+    staleTime: 30000,
+  });
+
+  // Parse and update alert settings from API
+  useEffect(() => {
+    if (userSettingsData?.data) {
+      const settings = userSettingsData.data;
+      console.log("settings", settings);
+
+      try {
+        // Parse personal alert settings
+        const emergency911 = settings.emergency911
+          ? JSON.parse(settings.emergency911)
+          : {};
+        const emergency988 = settings.emergency988
+          ? JSON.parse(settings.emergency988)
+          : {};
+        const emergency = settings.emergency
+          ? JSON.parse(settings.emergency)
+          : {};
+        const activeShooter = settings.activeShooter
+          ? JSON.parse(settings.activeShooter)
+          : {};
+        const distress = settings.distress ? JSON.parse(settings.distress) : {};
+
+        setAlertSettings({
+          autoDial911: emergency911.isEnabled || false,
+          autoDial988: emergency988.isEnabled || false,
+          emergency: emergency.isEnabled || false,
+          activeShooter: activeShooter.isEnabled || false,
+          feelingUnsafe: distress.isEnabled || false,
+        });
+
+        // Parse professional alert settings
+        const police = settings.police ? JSON.parse(settings.police) : {};
+        const emergencyMedicalService = settings.emergencyMedicalService
+          ? JSON.parse(settings.emergencyMedicalService)
+          : {};
+        const fireDepartment = settings.fireDepartment
+          ? JSON.parse(settings.fireDepartment)
+          : {};
+        const proActiveShooter = settings.proActiveShooter
+          ? JSON.parse(settings.proActiveShooter)
+          : {};
+        const proFeelingUnsafe = settings.proFeelingUnsafe
+          ? JSON.parse(settings.proFeelingUnsafe)
+          : {};
+
+        setProfessionalAlertSettings({
+          police: police.isEnabled || false,
+          medicalService: emergencyMedicalService.isEnabled || false,
+          fire: fireDepartment.isEnabled || false,
+          activeShooter: proActiveShooter.isEnabled || false,
+          feelingUnsafe: proFeelingUnsafe.isEnabled || false,
+        });
+      } catch (error) {
+        console.error("Error parsing alert settings:", error);
+      }
+    }
+  }, [userSettingsData]);
+
   const handleAlertToggle = (key) => {
     setAlertSettings({
       ...alertSettings,
@@ -210,6 +277,7 @@ const PersonalSafetyService = () => {
               <AlertButtonsSettings
                 alertSettings={alertSettings}
                 onToggle={handleAlertToggle}
+                settingsData={userSettingsData?.data}
               />
             )}
           </AlertSection>
@@ -249,6 +317,7 @@ const PersonalSafetyService = () => {
               <ProfessionalSafetyButton
                 alertSettings={professionalAlertSettings}
                 onToggle={handleAlertToggle}
+                settingsData={userSettingsData?.data}
               />
             )}
           </AlertSection>

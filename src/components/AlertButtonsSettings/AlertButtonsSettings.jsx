@@ -14,49 +14,93 @@ import {
 const AlertButtonsSettings = ({ alertSettings, onToggle, settingsData }) => {
   const [expandedButton, setExpandedButton] = useState(null);
 
-  const alertButtons = [
-    {
-      key: "autoDial911",
+  // Map API keys to display labels and alert settings keys
+  const buttonConfig = {
+    emergency911: {
       label: "Auto-Dial 911",
-      message:
+      key: "autoDial911",
+      defaultMessage:
         "I have dialed 911 for emergency assistance. Please stay alert and be ready to help if needed. I trust you and appreciate your support.",
-      showbutton: false,
     },
-    {
-      key: "autoDial988",
+    emergency988: {
       label: "Auto-Dial 988",
-      showbutton: false,
-      message:
+      key: "autoDial988",
+      defaultMessage:
         "I have dialed the 988 Suicide & Crisis Lifeline for support. Please stay alert and check in with me if possible. I trust you and appreciate your help.",
     },
-    {
-      key: "emergency",
+    emergency: {
       label: "Emergency",
-      showbutton: true,
-      message:
+      key: "emergency",
+      defaultMessage:
         "I am in a critical emergency situation and need help. Please call emergency services immediately. If you have my location, share it with them.",
-      flashOn: true,
-      alarmSound: true,
     },
-    {
-      key: "activeShooter",
+    activeShooter: {
       label: "Active Shooter",
-      showbutton: true,
-      message:
-        "There is an active shooter situation happening right now. Please call emergency services immediately. If you have my location, share it with them. ",
-      flashOn: true,
-      alarmSound: true,
+      key: "activeShooter",
+      defaultMessage:
+        "There is an active shooter situation happening right now. Please call emergency services immediately. If you have my location, share it with them.",
     },
-    {
-      key: "feelingUnsafe",
+    distress: {
       label: "Feeling Unsafe",
-      showbutton: true,
-      message:
-        "I am feeling unsafe and in distress.  Please contact me immediately as I need your help.",
-      flashOn: true,
-      alarmSound: true,
+      key: "feelingUnsafe",
+      defaultMessage:
+        "I am feeling unsafe and in distress. Please contact me immediately as I need your help.",
     },
-  ];
+  };
+
+  // Build alert buttons from settingsData
+  const alertButtons = Object.keys(buttonConfig).map((dataKey) => {
+    try {
+      // Handle null values by treating them as disabled
+      if (
+        settingsData?.[dataKey] === null ||
+        settingsData?.[dataKey] === undefined
+      ) {
+        return {
+          dataKey,
+          key: buttonConfig[dataKey].key,
+          label: buttonConfig[dataKey].label,
+          alertMessage: buttonConfig[dataKey].defaultMessage,
+          flashOn: false,
+          alarmSound: false,
+          isEnabled: false,
+        };
+      }
+
+      const parsedData = JSON.parse(settingsData[dataKey]);
+      console.log("returning data", {
+        dataKey,
+        key: buttonConfig[dataKey].key,
+        label: buttonConfig[dataKey].label,
+        alertMessage:
+          parsedData.alertMessage || buttonConfig[dataKey].defaultMessage,
+        flashOn: parsedData.flashOn || false,
+        alarmSound: parsedData.alarmSound || false,
+        isEnabled: parsedData.isEnabled || false,
+      });
+      return {
+        dataKey,
+        key: buttonConfig[dataKey].key,
+        label: buttonConfig[dataKey].label,
+        alertMessage:
+          parsedData.alertMessage || buttonConfig[dataKey].defaultMessage,
+        flashOn: parsedData.flashOn || false,
+        alarmSound: parsedData.alarmSound || false,
+        isEnabled: parsedData.isEnabled || false,
+      };
+    } catch (error) {
+      console.error(`Error parsing ${dataKey}:`, error);
+      return {
+        dataKey,
+        key: buttonConfig[dataKey].key,
+        label: buttonConfig[dataKey].label,
+        alertMessage: buttonConfig[dataKey].defaultMessage,
+        flashOn: false,
+        alarmSound: false,
+        isEnabled: false,
+      };
+    }
+  });
 
   const handleButtonClick = (key) => {
     setExpandedButton(expandedButton === key ? null : key);
@@ -102,7 +146,7 @@ const AlertButtonsSettings = ({ alertSettings, onToggle, settingsData }) => {
                   </AlertButtonLabel>
                 </AlertButtonLeft>
                 <Switch
-                  checked={alertSettings[button.key]}
+                  checked={button.isEnabled}
                   onChange={() => onToggle(button.key)}
                   onColor="rgb(76, 217, 100)"
                   disabled={true}
@@ -110,15 +154,15 @@ const AlertButtonsSettings = ({ alertSettings, onToggle, settingsData }) => {
               </AlertButtonItem>
               {isExpanded && (
                 <AlertButtonDetails
-                  message={button.message || ""}
-                  flashlightOn={button.flashOn || false}
-                  alarmSound={button.alarmSound || false}
+                  message={button.alertMessage}
+                  flashlightOn={button.flashOn}
+                  alarmSound={button.alarmSound}
                   onMessageChange={(value) =>
                     handleMessageChange(button.key, value)
                   }
                   onFlashlightToggle={() => handleFlashlightToggle(button.key)}
                   onAlarmToggle={() => handleAlarmToggle(button.key)}
-                  showButtons={button.showbutton}
+                  showButtons={true}
                 />
               )}
             </div>

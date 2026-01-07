@@ -12,9 +12,11 @@ const AlertButtonDetails = ({
   message,
   flashlightOn,
   alarmSound,
+  screenFlashing,
   onMessageChange,
   onFlashlightToggle,
   onAlarmToggle,
+  onScreenFlashingToggle,
   showButtons = false,
 }) => {
   return (
@@ -24,7 +26,7 @@ const AlertButtonDetails = ({
         value={message}
         onChange={(e) => onMessageChange(e.target.value)}
         placeholder="Enter alert message..."
-        disabled={true}
+        disabled={false}
       />
       {showButtons && (
         <>
@@ -47,6 +49,15 @@ const AlertButtonDetails = ({
               disabled={true}
             />
           </AlertOptionRow>
+          {/* <AlertOptionRow>
+            <AlertOptionLabel>Screen Flashing</AlertOptionLabel>
+            <Switch
+              checked={screenFlashing}
+              onChange={onScreenFlashingToggle}
+              onColor="rgb(76, 217, 100)"
+              disabled={true}
+            />
+          </AlertOptionRow> */}
         </>
       )}
     </AlertExpandedContent>

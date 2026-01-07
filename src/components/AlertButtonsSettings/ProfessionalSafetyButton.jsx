@@ -11,49 +11,104 @@ import {
 } from "../../styles/PersonalSafety.styled";
 import AlertButtonDetails from "./AlertButtonDetails";
 
-const ProfessionalSafetyButton = ({ alertSettings, onToggle }) => {
+const ProfessionalSafetyButton = ({
+  alertSettings,
+  onToggle,
+  settingsData,
+}) => {
   const [expandedButton, setExpandedButton] = useState(null);
-  const alertButtons = [
-    {
-      key: "police",
+
+  // Map API keys to display labels and alert settings keys
+  const buttonConfig = {
+    police: {
       label: "Police",
-      message:
-        "I have activated the Police Alert and am receiving assistance from the Professional Dispatch Center. I may not be able to answer calls right now as might be on the phone with the dispatcher or handling the situation. This message is for your awareness only.",
-      showbutton: false,
+      key: "police",
+      defaultMessage:
+        "I have activated the Police Alert and am receiving assistance from the Professional Dispatch Center. Please stay alert and be ready to provide any information if contacted.",
     },
-    {
-      key: "medicalService",
+    emergencyMedicalService: {
       label: "Emergency Medical Service",
-      message:
-        "I have activated the EMS Alert and am receiving assistance from the Professional Dispatch Center. I may not be able to answer calls right now as might be on the phone with the dispatcher or handling the situation. This message is for your awareness only.",
-      showbutton: false,
+      key: "medicalService",
+      defaultMessage:
+        "I have activated the Emergency Medical Service Alert and am receiving assistance from the Professional Dispatch Center. Please stay alert and be ready to provide any information if contacted.",
     },
-    {
-      key: "fire",
+    fireDepartment: {
       label: "Fire Department",
-      message:
-        "I have activated the Fire Department Alert and am receiving assistance from the Professional Dispatch Center. I may not be able to answer calls right now as might be on the phone with the dispatcher or handling the situation. This message is for your awareness only.",
-      showbutton: false,
+      key: "fire",
+      defaultMessage:
+        "I have activated the Fire Department Alert and am receiving assistance from the Professional Dispatch Center. Please stay alert and be ready to provide any information if contacted.",
     },
-    {
-      key: "activeShooter",
+    proActiveShooter: {
       label: "Active Shooter",
-      message:
-        "I have activated the Active Shooter Alert and am receiving assistance from the Professional Dispatch Center. I may not be able to answer calls right now as might be on the phone with the dispatcher or handling the situation. This message is for your awareness only.",
-      showbutton: false,
+      key: "activeShooter",
+      defaultMessage:
+        "I have activated the Active Shooter Alert and am receiving assistance from the Professional Dispatch Center. Please stay alert and be ready to provide any information if contacted.",
     },
-    {
-      key: "feelingUnsafe",
+    proFeelingUnsafe: {
       label: "Feeling Unsafe",
-      message:
-        "I have activated the Feeling Unsafe Alert and am receiving assistance from the Professional Dispatch Center. I may not be able to answer calls right now as might be on the phone with the dispatcher or handling the situation. This message is for your awareness only.",
-      showbutton: false,
+      key: "feelingUnsafe",
+      defaultMessage:
+        "I have activated the Feeling Unsafe Alert and am receiving assistance from the Professional Dispatch Center. Please stay alert and be ready to provide any information if contacted.",
     },
-  ];
+  };
+
+  // Build alert buttons from settingsData
+  const alertButtons = Object.keys(buttonConfig).map((dataKey) => {
+    try {
+      // Handle null values by treating them as disabled
+      if (
+        settingsData?.[dataKey] === null ||
+        settingsData?.[dataKey] === undefined
+      ) {
+        return {
+          dataKey,
+          key: buttonConfig[dataKey].key,
+          label: buttonConfig[dataKey].label,
+          alertMessage: buttonConfig[dataKey].defaultMessage,
+          flashOn: false,
+          alarmSound: false,
+          isEnabled: false,
+        };
+      }
+
+      const parsedData = JSON.parse(settingsData[dataKey]);
+      return {
+        dataKey,
+        key: buttonConfig[dataKey].key,
+        label: buttonConfig[dataKey].label,
+        alertMessage:
+          parsedData.alertMessage || buttonConfig[dataKey].defaultMessage,
+        flashOn: parsedData.flashOn || false,
+        alarmSound: parsedData.alarmSound || false,
+        isEnabled: parsedData.isEnabled || false,
+      };
+    } catch (error) {
+      console.error(`Error parsing ${dataKey}:`, error);
+      return {
+        dataKey,
+        key: buttonConfig[dataKey].key,
+        label: buttonConfig[dataKey].label,
+        alertMessage: buttonConfig[dataKey].defaultMessage,
+        flashOn: false,
+        alarmSound: false,
+        isEnabled: false,
+      };
+    }
+  });
 
   const handleMessageChange = (key, value) => {
     console.log(`Update message for ${key}:`, value);
     // TODO: Implement API call to update message
+  };
+
+  const handleFlashlightToggle = (key) => {
+    console.log(`Toggle flashlight for ${key}`);
+    // TODO: Implement API call to toggle flashlight
+  };
+
+  const handleAlarmToggle = (key) => {
+    console.log(`Toggle alarm for ${key}`);
+    // TODO: Implement API call to toggle alarm
   };
 
   const handleButtonClick = (key) => {
@@ -70,11 +125,21 @@ const ProfessionalSafetyButton = ({ alertSettings, onToggle }) => {
             <div key={button.key}>
               <AlertButtonItem>
                 <AlertButtonLeft onClick={() => handleButtonClick(button.key)}>
-                  <MdChevronRight size={20} color="#9ca3af" />
-                  <AlertButtonLabel>{button.label}</AlertButtonLabel>
+                  <MdChevronRight
+                    size={20}
+                    color="#9ca3af"
+                    style={{
+                      transform: isExpanded ? "rotate(90deg)" : "rotate(0deg)",
+                      transition: "transform 0.3s ease",
+                      cursor: "pointer",
+                    }}
+                  />
+                  <AlertButtonLabel style={{ cursor: "pointer" }}>
+                    {button.label}
+                  </AlertButtonLabel>
                 </AlertButtonLeft>
                 <Switch
-                  checked={alertSettings[button.key]}
+                  checked={button.isEnabled}
                   onChange={() => onToggle(button.key)}
                   onColor="rgb(76, 217, 100)"
                   disabled={true}
@@ -82,13 +147,14 @@ const ProfessionalSafetyButton = ({ alertSettings, onToggle }) => {
               </AlertButtonItem>
               {isExpanded && (
                 <AlertButtonDetails
-                  message={button.message || ""}
-                  flashlightOn={button.flashOn || false}
-                  alarmSound={button.alarmSound || false}
+                  message={button.alertMessage}
+                  flashlightOn={button.flashOn}
+                  alarmSound={button.alarmSound}
                   onMessageChange={(value) =>
                     handleMessageChange(button.key, value)
                   }
-                  showButtons={button.showbutton}
+                  onFlashlightToggle={() => handleFlashlightToggle(button.key)}
+                  onAlarmToggle={() => handleAlarmToggle(button.key)}
                 />
               )}
             </div>
