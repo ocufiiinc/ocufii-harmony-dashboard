@@ -73,6 +73,7 @@ const Dashboard = () => {
     enabled: false, // Don't fetch automatically
     staleTime: 0, // Always fetch fresh data
     cacheTime: 0, // Don't cache
+    retry: 2, // Retry up to 2 times on failure
   });
 
   // TanStack Query for alert summary with dynamic time range
@@ -96,6 +97,7 @@ const Dashboard = () => {
     enabled: !!user?.email,
     refetchInterval: 60000, // Refetch every 1 minute
     staleTime: 60000, // Cache for 1 minute
+    retry: 2, // Retry up to 2 times on failure
   });
 
   // TanStack Query for device health
@@ -105,6 +107,7 @@ const Dashboard = () => {
     enabled: !!user?.email,
     refetchInterval: 60000, // Refetch every 1 minute
     staleTime: 60000, // Cache for 1 minute
+    retry: 2, // Retry up to 2 times on failure
   });
 
   // Fetch dashboard data using TanStack Query
@@ -113,6 +116,7 @@ const Dashboard = () => {
     queryFn: () => getDashboard(user?.email || ""),
     enabled: !!user?.email && !alertActionAlert, // Only run query if user email exists and modal is not open
     refetchInterval: 5000, // Refetch every 5 seconds
+    retry: 2, // Retry up to 2 times on failure
   });
 
   // Use API data if available, otherwise fall back to example data
@@ -393,7 +397,7 @@ const Dashboard = () => {
                 >
                   <AlertCard
                     category={activeAlerts.security.category}
-                    color={"rgba(225, 6, 0, 1)"}
+                    color={"#E10600"}
                     count={activeAlerts.security.count}
                     alerts={activeAlerts.security.alerts}
                     onViewAll={() => handleViewAll("security")}

@@ -986,7 +986,7 @@ export const AlertItem = styled.div`
   .alert-action-button {
     width: 100%;
     padding: 12px 16px;
-    background: #00bcd4;
+    background: rgba(0, 181, 226, 1);
     border: none;
     border-radius: 8px;
     color: white;
@@ -1001,7 +1001,7 @@ export const AlertItem = styled.div`
     }
 
     &.red {
-      background: #dc3545;
+      background: #e10600;
 
       &:hover {
         background: #c82333;
@@ -1009,7 +1009,7 @@ export const AlertItem = styled.div`
     }
 
     &.yellow {
-      background: #ffc107;
+      background: rgba(252, 196, 0, 1);
       color: #ffffff;
 
       &:hover {
