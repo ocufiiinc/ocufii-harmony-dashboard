@@ -230,7 +230,16 @@ const PersonalSafetyService = () => {
                 <InfoIcon onClick={() => setShowProfessionalModal(true)}>
                   <MdInfo />
                 </InfoIcon>
-                <MdChevronRight size={24} color="#6c757d" />
+                <MdChevronRight
+                  size={24}
+                  color="#6c757d"
+                  style={{
+                    transform: isProfessionalAlertsOpen
+                      ? "rotate(90deg)"
+                      : "rotate(0deg)",
+                    transition: "transform 0.3s ease",
+                  }}
+                />
               </AlertRight>
             </AlertHeader>
             <AlertDescription>
