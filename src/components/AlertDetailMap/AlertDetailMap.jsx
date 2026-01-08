@@ -1005,13 +1005,31 @@ const AlertDetailMap = ({
           </button>
         `;
         this._container.onclick = () => {
-          map.flyTo({
-            center: initialView.center,
-            zoom: initialView.zoom,
-            pitch: initialView.pitch,
-            bearing: initialView.bearing,
-            duration: 1500,
-          });
+          // Fly to alert location if available, otherwise USA center
+          const hasAlertLocation =
+            selectedAlert &&
+            selectedAlert.latitude &&
+            selectedAlert.longitude &&
+            !isNaN(selectedAlert.latitude) &&
+            !isNaN(selectedAlert.longitude);
+
+          if (hasAlertLocation) {
+            map.flyTo({
+              center: [selectedAlert.longitude, selectedAlert.latitude],
+              zoom: 15,
+              pitch: initialView.pitch,
+              bearing: initialView.bearing,
+              duration: 1500,
+            });
+          } else {
+            map.flyTo({
+              center: initialView.center,
+              zoom: initialView.zoom,
+              pitch: initialView.pitch,
+              bearing: initialView.bearing,
+              duration: 1500,
+            });
+          }
         };
         return this._container;
       }
