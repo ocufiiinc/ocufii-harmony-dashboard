@@ -22,6 +22,7 @@ import {
   RadioInput,
   RadioLabel,
 } from "../styles/Settings.styled";
+import LanguageImg from "../assets/images/language.png";
 
 const Settings = () => {
   const { user } = useUser();
@@ -83,7 +84,10 @@ const Settings = () => {
         <SettingsHeader>
           <PageTitle>Settings</PageTitle>
           <LanguageSection>
-            <LanguageIcon>Language:</LanguageIcon>
+            <LanguageIcon>
+              <img src={LanguageImg} alt="Language" />
+              Language:
+            </LanguageIcon>
             <LanguageSelect
               value={language}
               onChange={(e) => setLanguage(e.target.value)}

@@ -34,9 +34,8 @@ export const LanguageIcon = styled.span`
   gap: 4px;
   font-family: "Decimal", sans-serif;
 
-  &::before {
-    content: "🌐";
-    font-size: 16px;
+  img {
+    width: 20px;
   }
 `;
 
@@ -100,7 +99,7 @@ export const SettingItem = styled.div`
 
 export const SettingLabel = styled.div`
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   color: ${(props) => props.theme.colors.textPrimary};
   font-family: "Decimal", sans-serif;
 `;
@@ -133,6 +132,10 @@ export const RadioOption = styled.label`
   &:hover {
     background: ${(props) => props.theme.colors.background};
   }
+
+  &:has(input:disabled) {
+    cursor: not-allowed;
+  }
 `;
 
 export const RadioInput = styled.input`
@@ -140,6 +143,15 @@ export const RadioInput = styled.input`
   height: 20px;
   cursor: pointer;
   accent-color: #ff9800;
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+
+  &:disabled:not(:checked) {
+    opacity: 0.5;
+    accent-color: #d3d3d3;
+  }
 `;
 
 export const RadioLabel = styled.span`
