@@ -121,7 +121,7 @@ const AlertDetails = () => {
     } catch (error) {
       console.error("Error in handleSeeRecipients:", error);
       setIsLoadingRecipients(false);
-      Toast.error("Failed to fetch safety network locations");
+      // Toast.error("Failed to fetch safety network locations");
     }
   };
 

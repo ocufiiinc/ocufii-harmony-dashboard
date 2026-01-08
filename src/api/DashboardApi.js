@@ -50,12 +50,12 @@ export const pingRecipients = async (email, notificationId) => {
     if (response.data.status == 200) {
       return response.data;
     } else {
-      Toast.error(response.data.message || "Failed to ping recipients");
+      // Toast.error(response.data.message || "Failed to ping recipients");
       return null;
     }
   } catch (error) {
     console.error("Error ping recipients:", error);
-    Toast.error("Failed to ping recipients");
+    // Toast.error("Failed to ping recipients");
     throw error;
   }
 };
@@ -78,14 +78,14 @@ export const getSafetyNetworkLocations = async (email, notificationId) => {
       }
       return response.data;
     } else {
-      Toast.error(
-        response.data.message || "Failed to get safety network locations"
-      );
+      // Toast.error(
+      //   response.data.message || "Failed to get safety network locations"
+      // );
       return null;
     }
   } catch (error) {
     console.error("Error getting safety network locations:", error);
-    Toast.error("Failed to get safety network locations");
+    // Toast.error("Failed to get safety network locations");
     throw error;
   }
 };
@@ -113,15 +113,15 @@ export const sendAssistMessage = async ({
     });
     console.log("Send assist message response:", response.data);
     if (response.data.status == 200) {
-      Toast.success(response.data.message || "Message sent successfully");
+      // Toast.success(response.data.message || "Message sent successfully");
       return response.data;
     } else {
-      Toast.error(response.data.message || "Failed to send message");
+      // Toast.error(response.data.message || "Failed to send message");
       return null;
     }
   } catch (error) {
     console.error("Error sending assist message:", error);
-    Toast.error("Failed to send message");
+    // Toast.error("Failed to send message");
     throw error;
   }
 };
@@ -135,14 +135,14 @@ export const getAssistRequestStatus = async (notificationId) => {
     if (response.data.status == 200) {
       return response.data;
     } else {
-      Toast.error(
-        response.data.message || "Failed to get assist request status"
-      );
+      // Toast.error(
+      //   response.data.message || "Failed to get assist request status"
+      // );
       return null;
     }
   } catch (error) {
     console.error("Error getting assist request status:", error);
-    Toast.error("Failed to get assist request status");
+    // Toast.error("Failed to get assist request status");
     throw error;
   }
 };
