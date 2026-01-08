@@ -75,7 +75,7 @@ const Account = () => {
                 <AvatarPlaceholder />
               </ProfileAvatar>
             </ProfileAvatarWrapper>
-            <UserName>{user?.name || "John Doe"}</UserName>
+            <UserName>{profileData?.userName || "John Doe"}</UserName>
 
             <DeleteAccountSection>
               <DeleteAccountButton disabled onClick={handleDeleteAccount}>
