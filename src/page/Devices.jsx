@@ -3,7 +3,6 @@ import { useQuery } from "@tanstack/react-query";
 import { DashboardContent } from "../styles/Dashboard.styled";
 import DashboardLayout from "../Layout/DashboardLayout";
 import DataTable from "../components/DataTable";
-import { DevicesContainer } from "../styles/Devices.styled";
 import hubImage from "../assets/images/baseStation.png";
 import beaconImg from "../assets/images/beacon.png";
 import triggerLockImg from "../assets/images/lockbeacon.png";
@@ -109,6 +108,12 @@ const Devices = () => {
       battery: `${beacon.battery}%`,
       beaconSettings: "Settings",
       beacon: true,
+      type: beacon.beaconType,
+      beaconTypeName: beacon.beaconTypeName,
+      communication: beacon.communication,
+      dateCreated: beacon.dateCreated,
+      lastOnline: beacon.lastOnline,
+      snoozeEndTime: beacon.snoozeEndTime,
     }));
   };
 

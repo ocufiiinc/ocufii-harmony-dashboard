@@ -34,6 +34,7 @@ const DataTable = ({ columns, data, title, clientInfo, className }) => {
   };
 
   const handleSettingsClick = (item) => {
+    console.log("Navigating to device details for item:", item);
     navigate(ROUTE.DEVICEDETAILS, { state: { device: item } });
   };
 

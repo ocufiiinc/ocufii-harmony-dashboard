@@ -13,6 +13,8 @@ import {
   CancelButton,
   SaveButton,
 } from "../../styles/DeviceDetails.styled";
+import snoozeBell from "../../assets/images/alarm-bell-sleep-1.svg";
+import moment from "moment";
 
 const GeneralSettings = ({
   deviceType,
@@ -25,7 +27,50 @@ const GeneralSettings = ({
 }) => {
   const [editingField, setEditingField] = useState(null);
   const [localFormData, setLocalFormData] = useState(formData);
-  // console.log("GeneralSettings render:", deviceType);
+  // console.log("local form data render:", localFormData);
+
+  const getSnoozeTimeRemaining = () => {
+    // console.log("Calculating snooze time for:", localFormData.snoozeEndTime);
+    if (!localFormData.snoozeEndTime || localFormData.snoozeEndTime === "") {
+      return "Off";
+    }
+
+    const endTime = moment.utc(localFormData.snoozeEndTime).local();
+    const now = moment();
+    const diffMs = endTime.diff(now);
+
+    if (diffMs <= 0) {
+      return "Off";
+    }
+
+    const duration = moment.duration(diffMs);
+    const hours = Math.floor(duration.asHours());
+    const minutes = duration.minutes();
+
+    return (
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "8px 16px",
+          backgroundColor: "#FFF4E6",
+          border: "2px solid #FF9933",
+          borderRadius: "8px",
+          color: "#FF9933",
+          fontSize: "14px",
+          fontWeight: "600",
+        }}
+      >
+        <img
+          src={snoozeBell}
+          alt="snooze"
+          style={{ width: "20px", height: "20px" }}
+        />
+        {hours}H {minutes}M Remaining
+      </div>
+    );
+  };
 
   const handleFieldClick = (fieldName) => {
     setEditingField(fieldName);
@@ -137,10 +182,7 @@ const GeneralSettings = ({
                 </SettingItemLeft>
                 <SettingItemRight>
                   <>
-                    {localFormData.snoozeEndTime !== null &&
-                    localFormData.snoozeEndTime !== ""
-                      ? "On"
-                      : "Off"}
+                    {getSnoozeTimeRemaining()}
                     <span className="arrow">›</span>
                   </>
                 </SettingItemRight>
@@ -282,10 +324,7 @@ const GeneralSettings = ({
                   </SettingItemLeft>
                   <SettingItemRight>
                     <>
-                      {localFormData.snoozeEndTime !== null &&
-                      localFormData.snoozeEndTime !== ""
-                        ? "On"
-                        : "Off"}
+                      {getSnoozeTimeRemaining()}
                       <span className="arrow">›</span>
                     </>
                   </SettingItemRight>

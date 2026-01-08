@@ -47,6 +47,20 @@ const DeviceDetails = () => {
     name: deviceData.hubName || deviceData.beaconName || deviceData.name || "",
     location: deviceData.location || "",
     information: "",
+    NotificationSnooze: deviceData.NotificationSnooze || "Disabled",
+    avatar: deviceData.avatar || deviceData.image || "",
+    battery: deviceData.battery || "N/A",
+    beacon: deviceData.beacon || false,
+    beaconSettings: deviceData.beaconSettings || "",
+    beaconTypeName: deviceData.beaconTypeName || "FLEXIBANDS",
+    communication: deviceData.communication || "WiFi Hub",
+    dateCreated: deviceData.dateCreated || "2024-12-01T09:15:30",
+    id: deviceData.id || 0,
+    lastOnline: deviceData.lastOnline || "2026-01-06T11:26:10",
+    macAddress: deviceData.macAddress || "F8AA48040CD7",
+    snoozeEndTime: deviceData.snoozeEndTime || "2026-01-07T18:19:31",
+    status: deviceData.status || "Offline",
+    type: deviceData.type || 3,
   });
 
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
