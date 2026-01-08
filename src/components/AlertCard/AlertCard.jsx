@@ -46,10 +46,8 @@ const AlertCard = ({ category, color, count, alerts, onViewAll, children }) => {
 
   // Filter alerts based on selected filter
   const filteredAlerts = useMemo(() => {
-    // First filter out acknowledged alerts (acknowledge === 1 or 2)
-    const activeAlerts = alerts.filter(
-      (alert) => alert.acknowledge !== "1" && alert.acknowledge !== "2"
-    );
+    // First filter out acknowledged alerts and resolved alerts
+    const activeAlerts = alerts.filter((alert) => alert.acknowledge === "0");
 
     if (selectedFilter === "All Alerts") {
       return activeAlerts;
