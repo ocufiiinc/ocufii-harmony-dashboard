@@ -3,7 +3,7 @@
 
 /* Ensure Decimal font is loaded and applied */
 :root {
-  --font-family-primary: "Decimal", "Segoe UI";
+  --font-family-primary: "Decimal";
 }
 
 /* Reset and base styles with stronger font application */
