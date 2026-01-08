@@ -26,6 +26,7 @@ import { RxCross2 } from "react-icons/rx";
 import { MenuItems } from "../common/CommonData";
 import { ROUTE } from "../common/Routes";
 import moment from "moment/moment";
+import { RightsReserved } from "../common/AppVersion";
 
 const DashboardLayout = ({ children }) => {
   const { user, logout } = useUser();
@@ -222,7 +223,7 @@ const DashboardLayout = ({ children }) => {
 
           <DashboardFooter>
             <div>
-              <p>Ocufii {moment().year()}, All rights reserved</p>
+              <p>{RightsReserved}</p>
               <div>
                 <a
                   href="https://www.ocufii.com/terms-of-service/"

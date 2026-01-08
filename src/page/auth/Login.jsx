@@ -25,7 +25,7 @@ import {
   FooterLinks,
   FooterLink,
 } from "../../styles/Login.styled";
-import { AppVersion } from "../../common/AppVersion";
+import { AppVersion, RightsReserved } from "../../common/AppVersion";
 import { ROUTE } from "../../common/Routes";
 
 const Login = () => {
@@ -233,7 +233,7 @@ const Login = () => {
 
       <Footer>
         <FooterContent>
-          <FooterText>Ocufii 2025, All rights reserved</FooterText>
+          <FooterText>{RightsReserved}</FooterText>
           <FooterLinks>
             <FooterLink href="#">v {AppVersion}</FooterLink>
             <FooterLink
