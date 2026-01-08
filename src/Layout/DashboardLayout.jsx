@@ -38,6 +38,7 @@ const DashboardLayout = ({ children }) => {
     queryKey: ["overviewStats", user?.email],
     queryFn: () => getOverviewStats(user?.email),
     enabled: !!user?.email,
+    retry: 1, // Retry up to 1 time on failure
   });
 
   // Calculate counts from overview stats
