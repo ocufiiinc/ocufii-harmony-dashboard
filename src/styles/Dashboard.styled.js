@@ -583,7 +583,7 @@ export const AlertCardHeader = styled.div`
   h3 {
     margin: 0;
     font-size: ${({ theme }) => theme.fontSize.xl};
-    font-weight: ${({ theme }) => theme.fontWeight.medium};
+    font-weight: ${({ theme }) => theme.fontWeight.semibold};
     color: ${({ theme }) => theme.colors.textPrimary};
   }
 
