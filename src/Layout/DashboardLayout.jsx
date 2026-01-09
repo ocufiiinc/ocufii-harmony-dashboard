@@ -215,7 +215,8 @@ const DashboardLayout = ({ children }) => {
                       fontWeight: "700",
                       minWidth: "20px",
                       textAlign: "center",
-                      color: "#000000",
+                      color:
+                        location.pathname === item.path ? "#f28f17" : "#000000",
                     }}
                   >
                     {itemCount}

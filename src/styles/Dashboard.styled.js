@@ -298,7 +298,7 @@ export const MenuItem = styled.div`
 
     .label {
       color: rgba(237, 139, 0, 1);
-      font-weight: ${({ theme }) => theme.fontWeight.semibold};
+      font-weight: ${({ theme }) => theme.fontWeight.bold};
     }
   }
 
