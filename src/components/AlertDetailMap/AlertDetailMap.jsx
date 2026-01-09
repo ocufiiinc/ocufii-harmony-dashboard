@@ -50,6 +50,9 @@ const AlertDetailMap = ({
   const previousAlertsRef = useRef(null); // Track previous alerts data
   const previousSelectedAlertIdRef = useRef(null); // Track previous selected alert ID
 
+  // Global registry for button functions to ensure they persist
+  const buttonFunctionsRef = useRef({});
+
   // LocalStorage key for assist message responses
   const ASSIST_MESSAGES_KEY = "ocufii_assist_messages";
 
@@ -328,29 +331,57 @@ const AlertDetailMap = ({
             );
 
             if (recipient) {
-              // Create window functions for the buttons
-              window[`showRoute_${recipientId}`] = () => {
-                console.log("Show Route clicked for recipient:", recipientId);
-                fetchRoute(
-                  selectedAlert.longitude,
-                  selectedAlert.latitude,
-                  recipient.longitude,
-                  recipient.latitude,
+              // Create stable functions and store in multiple places
+              const showRouteFn = () => {
+                console.log(
+                  "[Show Route] Status update handler called for:",
                   recipientId
                 );
+                try {
+                  fetchRoute(
+                    selectedAlert.longitude,
+                    selectedAlert.latitude,
+                    recipient.longitude,
+                    recipient.latitude,
+                    recipientId
+                  );
+                } catch (error) {
+                  console.error("[Show Route] Error:", error);
+                }
               };
 
-              window[`shareRoute_${recipientId}`] = () => {
-                console.log("Share Route clicked for recipient:", recipientId);
-                shareRoute(
-                  selectedAlert.longitude,
-                  selectedAlert.latitude,
-                  recipient.longitude,
-                  recipient.latitude,
-                  recipient.email,
-                  recipient.name || "Recipient"
+              const shareRouteFn = () => {
+                console.log(
+                  "[Share Route] Status update handler called for:",
+                  recipientId
                 );
+                try {
+                  shareRoute(
+                    selectedAlert.longitude,
+                    selectedAlert.latitude,
+                    recipient.longitude,
+                    recipient.latitude,
+                    recipient.email,
+                    recipient.name || "Recipient"
+                  );
+                } catch (error) {
+                  console.error("[Share Route] Error:", error);
+                }
               };
+
+              // Store in ref and window
+              buttonFunctionsRef.current[`showRoute_${recipientId}`] =
+                showRouteFn;
+              buttonFunctionsRef.current[`shareRoute_${recipientId}`] =
+                shareRouteFn;
+              window[`showRoute_${recipientId}`] = showRouteFn;
+              window[`shareRoute_${recipientId}`] = shareRouteFn;
+
+              console.log("[Functions Registered in Status Update]", {
+                recipientId,
+                showRoute: typeof window[`showRoute_${recipientId}`],
+                shareRoute: typeof window[`shareRoute_${recipientId}`],
+              });
             }
 
             // Show route buttons when accepted
@@ -361,7 +392,7 @@ const AlertDetailMap = ({
             const routeButtonsHTML = `
               <div class="route-buttons-${recipientId}" style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
                 <button 
-                  onclick="window['showRoute_${recipientId}']()"
+                  onclick="try { console.log('[Show Route Click from Status]'); if (window['showRoute_${recipientId}']) { window['showRoute_${recipientId}'](); } else { console.error('showRoute function not found'); alert('Function not available. Please refresh.'); } } catch(e) { console.error('[Show Route Error]', e); alert('Error: ' + e.message); }"
                   style="padding: 10px; background: linear-gradient(135deg, #007cbf 0%, #0099ff 100%); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 450; cursor: pointer; font-family: 'Decimal', sans-serif; box-shadow: 0 2px 4px rgba(0,0,0,0.2); transition: all 0.3s ease;"
                   onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 8px rgba(0,0,0,0.3)'"
                   onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.2)'"
@@ -369,7 +400,7 @@ const AlertDetailMap = ({
                   Show Route
                 </button>
                 <button 
-                  onclick="window['shareRoute_${recipientId}']()"
+                  onclick="try { console.log('[Share Route Click from Status]'); if (window['shareRoute_${recipientId}']) { window['shareRoute_${recipientId}'](); } else { console.error('shareRoute function not found'); alert('Function not available. Please refresh.'); } } catch(e) { console.error('[Share Route Error]', e); alert('Error: ' + e.message); }"
                   style="padding: 10px; background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 450; cursor: pointer; font-family: 'Decimal', sans-serif; box-shadow: 0 2px 4px rgba(0,0,0,0.2); transition: all 0.3s ease;"
                   onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 8px rgba(0,0,0,0.3)'"
                   onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.2)'"
@@ -409,7 +440,7 @@ const AlertDetailMap = ({
             if (routeButtons) {
               routeButtons.outerHTML = `
                 <button 
-                  onclick="window['sendMessage_${recipientId}']()"
+                  onclick="try { console.log('[Send Message Click from Status]'); if (window['sendMessage_${recipientId}']) { window['sendMessage_${recipientId}'](); } else { console.error('sendMessage function not found'); alert('Function not available. Please refresh.'); } } catch(e) { console.error('[Send Message Error]', e); alert('Error: ' + e.message); }"
                   style="padding: 12px; background: linear-gradient(135deg, #007cbf 0%, #0099ff 100%); color: white; border: none; border-radius: 6px; font-size: 14px; font-weight: 450; cursor: pointer; font-family: 'Decimal', sans-serif; box-shadow: 0 2px 4px rgba(0,0,0,0.2); transition: all 0.3s ease; margin-bottom: 8px; width: 100%;"
                   onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 8px rgba(0,0,0,0.3)'"
                   onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.2)'"
@@ -2086,15 +2117,15 @@ const AlertDetailMap = ({
 
         // Create global functions for buttons FIRST before setting up popup HTML
         const recipientId = `${selectedAlert.id}_${index}`;
-        if (!showSendMessage && !isPending) {
-          console.log(
-            `Creating route buttons for recipient ${index + 1} (Status: ${
-              recipient.assistStatus
-            })`
-          );
 
-          window[`showRoute_${recipientId}`] = () => {
-            console.log("Show Route clicked for recipient:", recipientId);
+        // Define stable functions and store them in multiple places for reliability
+        const showRouteFn = () => {
+          console.log(
+            "[Show Route] Function called for:",
+            recipientId,
+            recipient.email
+          );
+          try {
             fetchRoute(
               selectedAlert.longitude,
               selectedAlert.latitude,
@@ -2102,10 +2133,18 @@ const AlertDetailMap = ({
               recipient.latitude,
               recipientId
             );
-          };
+          } catch (error) {
+            console.error("[Show Route] Error:", error);
+          }
+        };
 
-          window[`shareRoute_${recipientId}`] = () => {
-            console.log("Share Route clicked for recipient:", recipientId);
+        const shareRouteFn = () => {
+          console.log(
+            "[Share Route] Function called for:",
+            recipientId,
+            recipient.email
+          );
+          try {
             shareRoute(
               selectedAlert.longitude,
               selectedAlert.latitude,
@@ -2114,73 +2153,94 @@ const AlertDetailMap = ({
               recipient.email,
               recipient.name || "Recipient"
             );
-          };
-        } else {
+          } catch (error) {
+            console.error("[Share Route] Error:", error);
+          }
+        };
+
+        const sendMessageFn = async () => {
           console.log(
-            `Creating send message button for recipient ${index + 1} (Status: ${
-              recipient.assistStatus
-            }, showSendMessage: ${showSendMessage}, isPending: ${isPending})`
+            "[Send Message] Function called for:",
+            recipientId,
+            recipient.email
           );
-          window[`sendMessage_${recipientId}`] = async () => {
-            console.log("Send Message clicked for recipient:", recipientId);
+          try {
+            // Call the API to send assist message
+            const response = await sendAssistMessage({
+              email: user?.email,
+              helperEmail: recipient.email,
+              notificationId: selectedAlert.id,
+              lat: selectedAlert.latitude.toString(),
+              long: selectedAlert.longitude.toString(),
+              customMessage: "Can you assist with this emergency?",
+              title: "Ocufii",
+              eventName: "Emergency",
+            });
 
-            try {
-              // Call the API to send assist message
-              const response = await sendAssistMessage({
-                email: user?.email,
-                helperEmail: recipient.email,
-                notificationId: selectedAlert.id,
-                lat: selectedAlert.latitude.toString(),
-                long: selectedAlert.longitude.toString(),
-                customMessage: "Can you assist with this emergency?",
-                title: "Ocufii",
-                eventName: "Emergency",
-              });
-
-              // Save the API response to localStorage
-              if (response) {
-                saveAssistMessageResponse(
-                  selectedAlert.id,
-                  recipient.email,
-                  response
-                );
-                // Also save eventId to ref if available
-                if (response.eventId) {
-                  recipientEventIdsRef.current[recipient.email] =
-                    response.eventId;
-                }
+            // Save the API response to localStorage
+            if (response) {
+              saveAssistMessageResponse(
+                selectedAlert.id,
+                recipient.email,
+                response
+              );
+              // Also save eventId to ref if available
+              if (response.eventId) {
+                recipientEventIdsRef.current[recipient.email] =
+                  response.eventId;
               }
-
-              // Update the popup to show pending status
-              const popupEl = document.querySelector(`.${popupId}`);
-              if (popupEl) {
-                const buttonContainer = popupEl.querySelector(
-                  'button[onclick*="sendMessage"]'
-                );
-                if (buttonContainer) {
-                  const sanitizedEmailForId = recipient.email.replace(
-                    /[^a-zA-Z0-9-_]/g,
-                    "-"
-                  );
-                  buttonContainer.outerHTML = `
-                    <div id="status-${sanitizedEmailForId}" style="padding: 12px; background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%); color: white; border-radius: 6px; font-size: 14px; font-weight: 450; text-align: center; margin-bottom: 8px; width: 100%;">
-                       Pending Response
-                    </div>
-                  `;
-                }
-              }
-
-              // Enable polling
-              setShouldPollStatus(true);
-            } catch (error) {
-              console.error("Error sending message:", error);
             }
-          };
-        }
-        console.log(`Created window functions for ${recipientId}:`, {
+
+            // Update the popup to show pending status
+            const popupEl = document.querySelector(
+              `.popup-${selectedAlert.id}-${recipient.email.replace(
+                /[^a-zA-Z0-9-_]/g,
+                "-"
+              )}`
+            );
+            if (popupEl) {
+              const buttonContainer = popupEl.querySelector(
+                'button[onclick*="sendMessage"]'
+              );
+              if (buttonContainer) {
+                const sanitizedEmailForId = recipient.email.replace(
+                  /[^a-zA-Z0-9-_]/g,
+                  "-"
+                );
+                buttonContainer.outerHTML = `
+                  <div id="status-${sanitizedEmailForId}" style="padding: 12px; background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%); color: white; border-radius: 6px; font-size: 14px; font-weight: 450; text-align: center; margin-bottom: 8px; width: 100%;">
+                     Pending Response
+                  </div>
+                `;
+              }
+            }
+
+            // Enable polling
+            setShouldPollStatus(true);
+          } catch (error) {
+            console.error("[Send Message] Error:", error);
+          }
+        };
+
+        // Store functions in ref (persists across renders)
+        buttonFunctionsRef.current[`showRoute_${recipientId}`] = showRouteFn;
+        buttonFunctionsRef.current[`shareRoute_${recipientId}`] = shareRouteFn;
+        buttonFunctionsRef.current[`sendMessage_${recipientId}`] =
+          sendMessageFn;
+
+        // Also attach to window for onclick handlers (backup)
+        window[`showRoute_${recipientId}`] = showRouteFn;
+        window[`shareRoute_${recipientId}`] = shareRouteFn;
+        window[`sendMessage_${recipientId}`] = sendMessageFn;
+
+        // Verify functions are accessible
+        console.log(`[Functions Registered] ${recipientId}:`, {
           showRoute: typeof window[`showRoute_${recipientId}`],
           shareRoute: typeof window[`shareRoute_${recipientId}`],
           sendMessage: typeof window[`sendMessage_${recipientId}`],
+          showSendMessage,
+          isPending,
+          status: recipient.assistStatus,
         });
 
         // Format location updated time
@@ -2306,7 +2366,7 @@ const AlertDetailMap = ({
                 ? `
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px;">
               <button 
-                onclick="window['showRoute_${recipientId}']()"
+                onclick="try { console.log('[Show Route Click]'); if (window['showRoute_${recipientId}']) { window['showRoute_${recipientId}'](); } else { console.error('showRoute function not found'); alert('Function not available. Please refresh the page.'); } } catch(e) { console.error('[Show Route Error]', e); alert('Error: ' + e.message); }"
                 style="padding: 10px; background: linear-gradient(135deg, #007cbf 0%, #0099ff 100%); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 450; cursor: pointer; font-family: 'Decimal', sans-serif; box-shadow: 0 2px 4px rgba(0,0,0,0.2); transition: all 0.3s ease;"
                 onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 8px rgba(0,0,0,0.3)'"
                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.2)'"
@@ -2314,7 +2374,7 @@ const AlertDetailMap = ({
                 Show Route
               </button>
               <button 
-                onclick="window['shareRoute_${recipientId}']()"
+                onclick="try { console.log('[Share Route Click]'); if (window['shareRoute_${recipientId}']) { window['shareRoute_${recipientId}'](); } else { console.error('shareRoute function not found'); alert('Function not available. Please refresh the page.'); } } catch(e) { console.error('[Share Route Error]', e); alert('Error: ' + e.message); }"
                 style="padding: 10px; background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; border: none; border-radius: 6px; font-size: 13px; font-weight: 450; cursor: pointer; font-family: 'Decimal', sans-serif; box-shadow: 0 2px 4px rgba(0,0,0,0.2); transition: all 0.3s ease;"
                 onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 8px rgba(0,0,0,0.3)'"
                 onmouseout="this.style.transform='translateY(0)'; this.style.boxSadow='0 2px 4px rgba(0,0,0,0.2)'"
@@ -2326,7 +2386,7 @@ const AlertDetailMap = ({
                 : currentShowSendMessage
                 ? `
             <button 
-              onclick="window['sendMessage_${recipientId}']()"
+              onclick="try { console.log('[Send Message Click]'); if (window['sendMessage_${recipientId}']) { window['sendMessage_${recipientId}'](); } else { console.error('sendMessage function not found'); alert('Function not available. Please refresh the page.'); } } catch(e) { console.error('[Send Message Error]', e); alert('Error: ' + e.message); }"
               style="padding: 12px; background: linear-gradient(135deg, #007cbf 0%, #0099ff 100%); color: white; border: none; border-radius: 6px; font-size: 14px; font-weight: 450; cursor: pointer; font-family: 'Decimal', sans-serif; box-shadow: 0 2px 4px rgba(0,0,0,0.2); transition: all 0.3s ease; margin-bottom: 8px; width: 100%;"
               onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 8px rgba(0,0,0,0.3)'"
               onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 4px rgba(0,0,0,0.2)'"
