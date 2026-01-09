@@ -82,6 +82,7 @@ export const MenuItems = [
 ];
 
 export const dateRangeMap = {
+  all: "all",
   "24hours": "24hours",
   "7days": "7",
   "15days": "15",

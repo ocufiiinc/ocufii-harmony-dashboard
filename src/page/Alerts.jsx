@@ -25,7 +25,7 @@ import AlertActionModal from "../components/AlertActionModal/AlertActionModal";
 import { alertsChartData } from "../common/ExampleData";
 import { formatDate, formatTime } from "../utility/TimeFormat";
 import { getDeviceIcon, getSafetyAlertIcon } from "../utility/DeviceMapping";
-import { dateRangeMap } from "../common/CommonData";
+
 const Alerts = () => {
   const { user } = useUser();
   const navigate = useNavigate();
@@ -38,8 +38,7 @@ const Alerts = () => {
   // Fetch dashboard data
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ["dashboard", user?.email, selectedFilter],
-    queryFn: () =>
-      getDashboard(user?.email || "", 1000, dateRangeMap[selectedFilter]),
+    queryFn: () => getDashboard(user?.email || "", 1000, selectedFilter),
     enabled: !!user?.email,
     refetchInterval: 5000, // Refetch every 5 seconds
   });

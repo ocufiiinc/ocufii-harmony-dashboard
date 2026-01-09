@@ -24,7 +24,6 @@ import {
   CustomDropdownMenu,
   CustomDropdownItem,
 } from "../../styles/Alert.styled";
-import { dateRangeMap } from "../../common/CommonData";
 
 // Register ChartJS components
 ChartJS.register(
@@ -47,8 +46,7 @@ const AlertsChart = () => {
   // Fetch dashboard data for chart
   const { data: apiData } = useQuery({
     queryKey: ["dashboard-chart", user?.email, selectedRange],
-    queryFn: () =>
-      getDashboard(user?.email || "", 1000, dateRangeMap[selectedRange]),
+    queryFn: () => getDashboard(user?.email || "", 1000, selectedRange),
     enabled: !!user?.email,
     refetchInterval: 120000, // Refetch every 2 minutes
   });

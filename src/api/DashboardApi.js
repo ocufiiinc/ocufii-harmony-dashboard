@@ -1,9 +1,12 @@
 import api from "../common/ConfigAxios";
 import { APIROUTES } from "../common/ApiRoutes";
 import Toast from "../utility/Toast";
+import { dateRangeMap } from "../common/CommonData";
 
 export const getDashboard = async (email, limit = 1000, dateRange = "all") => {
   try {
+    dateRange = dateRangeMap[dateRange];
+    // console.log("Fetching dashboard with dateRange:", dateRange);
     const response = await api.get(
       APIROUTES.GET_ACTIVE_ALERTS(email, limit, dateRange)
     );

@@ -44,10 +44,6 @@ import {
 } from "../styles/SystemOverview.styled";
 import StatCard from "../components/StatCard/StatCard";
 import SafetyImage from "../assets/images/person-shield.svg";
-import baseStationImg from "../assets/images/baseStation.png";
-import lockImg from "../assets/images/lockbeacon.png";
-import safetyCardImg from "../assets/images/safety_card2.png";
-import beaconImg from "../assets/images/beacon.png";
 import SecurityImage from "../assets/images/warningShield2.png";
 import SystemImage from "../assets/images/warning2.svg";
 import OpenImage from "../assets/images/openFolder2.png";
@@ -70,11 +66,11 @@ const History = () => {
   // Fetch dashboard data with date range
   const { data: dashboardData } = useQuery({
     queryKey: ["dashboardHistory", user?.email, selectedFilter],
-    queryFn: () =>
-      getDashboard(user?.email || "", 1000, dateRangeMap[selectedFilter]),
+    queryFn: () => getDashboard(user?.email || "", 1000, selectedFilter),
     enabled: !!user?.email,
     refetchInterval: 60000, // Refetch every 1 minute
     staleTime: 60000, // Cache for 1 minute
+    retry: 1,
   });
 
   // TanStack Query for alert summary with dynamic time range
@@ -98,6 +94,7 @@ const History = () => {
     enabled: !!user?.email,
     refetchInterval: 60000, // Refetch every 1 minute
     staleTime: 60000, // Cache for 1 minute
+    retry: 1,
   });
 
   // TanStack Query for device health
@@ -107,6 +104,7 @@ const History = () => {
     enabled: !!user?.email,
     refetchInterval: 60000, // Refetch every 1 minute
     staleTime: 60000, // Cache for 1 minute
+    retry: 1,
   });
 
   // Transform device health API data
