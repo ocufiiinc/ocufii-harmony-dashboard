@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   DashboardContainer,
@@ -19,6 +19,7 @@ import { useUser } from "../context/UserContext";
 import { useNavigate, useLocation } from "react-router-dom";
 import ocufiiLogo from "../assets/images/ocufii_logo_2.png";
 import { getOverviewStats } from "../api/DashboardApi";
+import { getUserSettings } from "../api/SettingsApi";
 
 import { CiLogout } from "react-icons/ci";
 import { RxHamburgerMenu } from "react-icons/rx";
@@ -33,6 +34,13 @@ const DashboardLayout = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [showWarningModal, setShowWarningModal] = useState(false);
+  const [timeRemaining, setTimeRemaining] = useState(60);
+
+  const inactivityTimerRef = useRef(null);
+  const warningTimerRef = useRef(null);
+  const countdownIntervalRef = useRef(null);
+  const lastActivityRef = useRef(Date.now());
 
   // Fetch overview stats
   const { data: overviewData } = useQuery({
@@ -40,6 +48,15 @@ const DashboardLayout = ({ children }) => {
     queryFn: () => getOverviewStats(user?.email),
     enabled: !!user?.email,
     retry: 1, // Retry up to 1 time on failure
+  });
+
+  // Fetch user settings for auto-logout
+  const { data: userSettingsData } = useQuery({
+    queryKey: ["userSettings", user?.email],
+    queryFn: () => getUserSettings(user?.email),
+    enabled: !!user?.email,
+    refetchInterval: 60000,
+    staleTime: 30000,
   });
 
   // Calculate counts from overview stats
@@ -94,6 +111,160 @@ const DashboardLayout = ({ children }) => {
 
     return "U";
   };
+
+  // Handle auto-logout
+  const handleAutoLogout = () => {
+    console.log("[Auto-Logout] User inactive - logging out");
+    clearAllTimers();
+    logout();
+    navigate(ROUTE.LOGIN);
+  };
+
+  // Clear all timers
+  const clearAllTimers = () => {
+    if (inactivityTimerRef.current) {
+      clearTimeout(inactivityTimerRef.current);
+      inactivityTimerRef.current = null;
+    }
+    if (warningTimerRef.current) {
+      clearTimeout(warningTimerRef.current);
+      warningTimerRef.current = null;
+    }
+    if (countdownIntervalRef.current) {
+      clearInterval(countdownIntervalRef.current);
+      countdownIntervalRef.current = null;
+    }
+  };
+
+  // Reset inactivity timer
+  const resetInactivityTimer = () => {
+    const settings = userSettingsData?.data;
+    const autoLogout = settings?.autoLogout;
+    const autoLogoutInterval = settings?.autoLogoutInterval;
+
+    // Only track inactivity if autoLogout is enabled (1)
+    if (autoLogout !== 1 || !autoLogoutInterval) {
+      return;
+    }
+
+    // Clear existing timers
+    clearAllTimers();
+
+    // Hide warning modal if open
+    if (showWarningModal) {
+      setShowWarningModal(false);
+    }
+
+    // Update last activity time
+    lastActivityRef.current = Date.now();
+
+    // Convert minutes to milliseconds
+    const intervalMs = autoLogoutInterval * 60 * 1000;
+    const warningTimeMs = intervalMs - 60000; // Show warning 1 minute before
+
+    console.log(
+      `[Auto-Logout] Timer reset. Will warn in ${
+        autoLogoutInterval - 1
+      } min, logout in ${autoLogoutInterval} min`
+    );
+
+    // Set warning timer (1 minute before logout)
+    if (autoLogoutInterval > 1) {
+      warningTimerRef.current = setTimeout(() => {
+        console.log("[Auto-Logout] Showing warning modal");
+        setShowWarningModal(true);
+        setTimeRemaining(60);
+
+        // Start countdown
+        countdownIntervalRef.current = setInterval(() => {
+          setTimeRemaining((prev) => {
+            if (prev <= 1) {
+              clearInterval(countdownIntervalRef.current);
+              return 0;
+            }
+            return prev - 1;
+          });
+        }, 1000);
+      }, warningTimeMs);
+    }
+
+    // Set logout timer
+    inactivityTimerRef.current = setTimeout(() => {
+      handleAutoLogout();
+    }, intervalMs);
+  };
+
+  // Handle user activity with debouncing
+  const handleUserActivity = useRef(
+    (() => {
+      let timeout;
+      return () => {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+          resetInactivityTimer();
+        }, 500); // Debounce by 500ms to avoid excessive resets
+      };
+    })()
+  ).current;
+
+  // Handle "Stay Logged In" button
+  const handleStayLoggedIn = () => {
+    console.log("[Auto-Logout] User chose to stay logged in");
+    setShowWarningModal(false);
+    resetInactivityTimer();
+  };
+
+  // Set up activity listeners and inactivity timer
+  useEffect(() => {
+    const settings = userSettingsData?.data;
+    const autoLogout = settings?.autoLogout;
+    const autoLogoutInterval = settings?.autoLogoutInterval;
+
+    // Only set up if autoLogout is enabled
+    if (autoLogout !== 1 || !autoLogoutInterval) {
+      console.log("[Auto-Logout] Feature disabled or not configured");
+      clearAllTimers();
+      setShowWarningModal(false);
+      return;
+    }
+
+    console.log(
+      `[Auto-Logout] Feature enabled - ${autoLogoutInterval} minutes inactivity timeout`
+    );
+
+    // Activity events to track
+    const activityEvents = [
+      "mousedown",
+      "mousemove",
+      "keydown",
+      "scroll",
+      "touchstart",
+      "click",
+    ];
+
+    // Add event listeners
+    activityEvents.forEach((event) => {
+      window.addEventListener(event, handleUserActivity, true);
+    });
+
+    // Start initial timer
+    resetInactivityTimer();
+
+    // Cleanup on unmount or settings change
+    return () => {
+      activityEvents.forEach((event) => {
+        window.removeEventListener(event, handleUserActivity, true);
+      });
+      clearAllTimers();
+    };
+  }, [userSettingsData, user?.email]);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      clearAllTimers();
+    };
+  }, []);
 
   return (
     <DashboardContainer>
@@ -258,6 +429,162 @@ const DashboardLayout = ({ children }) => {
           </DashboardFooter>
         </div>
       </div>
+
+      {/* Inactivity Warning Modal */}
+      {showWarningModal && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(0, 0, 0, 0.75)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 10000,
+            fontFamily: "'Decimal', sans-serif",
+          }}
+        >
+          <div
+            style={{
+              background: "white",
+              borderRadius: "16px",
+              padding: "32px",
+              maxWidth: "450px",
+              width: "90%",
+              boxShadow: "0 20px 60px rgba(0, 0, 0, 0.4)",
+              textAlign: "center",
+            }}
+          >
+            {/* Warning Icon */}
+            <div
+              style={{
+                width: "80px",
+                height: "80px",
+                margin: "0 auto 24px",
+                borderRadius: "50%",
+                background: "linear-gradient(135deg, #FFC107 0%, #FF9800 100%)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: "40px",
+              }}
+            >
+              ⏰
+            </div>
+
+            {/* Title */}
+            <h3
+              style={{
+                margin: "0 0 12px 0",
+                fontSize: "24px",
+                fontWeight: "600",
+                color: "#212529",
+              }}
+            >
+              Session Timeout Warning
+            </h3>
+
+            {/* Message */}
+            <p
+              style={{
+                margin: "0 0 8px 0",
+                fontSize: "16px",
+                color: "#6c757d",
+                lineHeight: "1.6",
+              }}
+            >
+              You've been inactive for a while. For your security, you'll be
+              automatically logged out in:
+            </p>
+
+            {/* Countdown Timer */}
+            <div
+              style={{
+                margin: "24px 0",
+                fontSize: "48px",
+                fontWeight: "700",
+                color: timeRemaining <= 10 ? "#dc3545" : "#FF9800",
+                fontFamily: "'Decimal', monospace",
+              }}
+            >
+              {timeRemaining}s
+            </div>
+
+            {/* Buttons */}
+            <div
+              style={{
+                display: "flex",
+                gap: "12px",
+                marginTop: "24px",
+              }}
+            >
+              <button
+                onClick={handleAutoLogout}
+                style={{
+                  flex: 1,
+                  padding: "14px 24px",
+                  background: "#6c757d",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "8px",
+                  fontSize: "16px",
+                  fontWeight: "500",
+                  cursor: "pointer",
+                  transition: "all 0.2s",
+                }}
+                onMouseOver={(e) => (e.target.style.background = "#5a6268")}
+                onMouseOut={(e) => (e.target.style.background = "#6c757d")}
+              >
+                Logout Now
+              </button>
+              <button
+                onClick={handleStayLoggedIn}
+                style={{
+                  flex: 1,
+                  padding: "14px 24px",
+                  background:
+                    "linear-gradient(135deg, #28a745 0%, #20c997 100%)",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "8px",
+                  fontSize: "16px",
+                  fontWeight: "600",
+                  cursor: "pointer",
+                  transition: "all 0.2s",
+                  boxShadow: "0 4px 12px rgba(40, 167, 69, 0.3)",
+                }}
+                onMouseOver={(e) => {
+                  e.target.style.transform = "translateY(-2px)";
+                  e.target.style.boxShadow =
+                    "0 6px 16px rgba(40, 167, 69, 0.4)";
+                }}
+                onMouseOut={(e) => {
+                  e.target.style.transform = "translateY(0)";
+                  e.target.style.boxShadow =
+                    "0 4px 12px rgba(40, 167, 69, 0.3)";
+                }}
+              >
+                Stay Logged In
+              </button>
+            </div>
+
+            {/* Info Text */}
+            <p
+              style={{
+                margin: "20px 0 0 0",
+                fontSize: "13px",
+                color: "#adb5bd",
+                lineHeight: "1.4",
+              }}
+            >
+              Any activity will reset the timer and keep you logged in.
+            </p>
+          </div>
+        </div>
+      )}
     </DashboardContainer>
   );
 };
