@@ -130,7 +130,7 @@ const MemberDetails = ({ member, outbound, inbound, onUnlink = () => {} }) => {
             <RowLabel>Safety Alerts</RowLabel>
           </div>
           <StatusPill $isActive={isSafetyActive}>
-            {isSafetyActive ? "ACTIVE" : "INACTIVE"}
+            {isSafetyActive ? "ACTIVE" : "DISABLED"}
           </StatusPill>
         </StatusRow>
 

@@ -60,13 +60,15 @@ const Settings = () => {
       // Update notification settings
       setNotifications((prev) => ({
         ...prev,
-        urgentBeaconMovementSound: settings.movementSound === "1",
+        urgentBeaconMovementSound:
+          settings.movementSound === "1" || settings.movementSound === null,
         defaultTone: settings.sound === "DEFAULT" || settings.sound === null,
         fireAlarm: settings.sound === "FIRE",
         emergencyAlarm: settings.sound === "EMERGENCY",
         urgentBeaconMovementVibration:
           settings.movementVibration === "1" ||
-          settings.movementVibration === true,
+          settings.movementVibration === true ||
+          settings.movementVibration === null,
       }));
     }
   }, [userSettingsData]);

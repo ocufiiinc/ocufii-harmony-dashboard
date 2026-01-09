@@ -67,7 +67,7 @@ const SafetyNetwork = () => {
           ? "PENDING"
           : link.userStatus === 1
           ? "LINKED"
-          : "UNLINKED",
+          : "NOT LINKED",
       enableLocation: link.enableLocation,
       enableSafety: link.enableSafety,
       enableSecurity: link.enableSecurity,
