@@ -54,7 +54,7 @@ export const DeviceHealthContainer = styled.div`
 
 export const DeviceHealthHeader = styled.h3`
   font-size: 20px;
-  font-weight: 500;
+  font-weight: 600;
   color: ${(props) => props.theme.colors.textPrimary};
   margin-bottom: 20px;
   font-family: "Decimal", sans-serif;
@@ -130,6 +130,7 @@ export const DeviceInfo = styled.div`
   display: flex;
   flex-direction: column;
   gap: 4px;
+  align-items: center;
 `;
 
 export const DeviceCount = styled.div`
@@ -238,7 +239,7 @@ export const AlertSummaryHeader = styled.div`
 
   h3 {
     font-size: 20px;
-    font-weight: 500;
+    font-weight: 600;
     color: ${(props) => props.theme.colors.textPrimary};
     margin: 0;
     font-family: "Decimal", sans-serif;
@@ -284,6 +285,7 @@ export const TimeDropdown = styled.select`
 export const TotalAlertsCard = styled.div`
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 12px;
   padding: 16px;
   background: ${(props) => props.theme.colors.white};

@@ -33,7 +33,11 @@ import OpenIssueImg from "../../assets/images/openFolder2.png";
 import AcknowledgedImg from "../../assets/images/Like.png";
 import ResolvedImg from "../../assets/images/done2.png";
 
-const AlertSummaryCard = ({ alertSummaryData, timeRange, onTimeRangeChange }) => {
+const AlertSummaryCard = ({
+  alertSummaryData,
+  timeRange,
+  onTimeRangeChange,
+}) => {
   // Use API data if available, otherwise fall back to default values
   const displayData = alertSummaryData || {
     totalAlerts: 0,
@@ -67,7 +71,13 @@ const AlertSummaryCard = ({ alertSummaryData, timeRange, onTimeRangeChange }) =>
           <img src={AlertImg} alt="Alert Icon" />
         </AlertIcon>
         <div>
-          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+            }}
+          >
             <AlertCount>{displayData.totalAlerts}</AlertCount>
             <AlertLabel>Alerts Received</AlertLabel>
           </div>
