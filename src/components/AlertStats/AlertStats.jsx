@@ -85,9 +85,18 @@ const AlertStats = ({ timeRange }) => {
     safetyCount: apiData.safetyCount || 0,
     securityCount: apiData.securityCount || 0,
     systemCount: apiData.systemCount || 0,
-    openCount: apiData.openCount || 0,
-    acknowledgedCount: apiData.acknowledgedCount || 0,
-    resolvedCount: apiData.resolvedCount || 0,
+    openCount:
+      (apiData?.safetyAlerts?.open || 0) +
+      (apiData?.securityAlerts?.open || 0) +
+      (apiData?.systemAlerts?.open || 0),
+    acknowledgedCount:
+      (apiData?.safetyAlerts?.acknowledged || 0) +
+      (apiData?.securityAlerts?.acknowledged || 0) +
+      (apiData?.systemAlerts?.acknowledged || 0),
+    resolvedCount:
+      (apiData?.safetyAlerts?.resolved || 0) +
+      (apiData?.securityAlerts?.resolved || 0) +
+      (apiData?.systemAlerts?.resolved || 0),
     description: "All alerts received since account was created.",
   };
 
@@ -97,9 +106,9 @@ const AlertStats = ({ timeRange }) => {
     securityCount: apiData.securityCount || 0,
     systemCount: apiData.systemCount || 0,
     activeAlerts: {
-      safety: apiData.safetyCount || 0,
-      security: apiData.securityCount || 0,
-      system: apiData.systemCount || 0,
+      safety: apiData?.safetyAlerts?.open || 0,
+      security: apiData?.securityAlerts?.open || 0,
+      system: apiData?.systemAlerts?.open || 0,
     },
     description: `Total alerts received in the ${getTimeRangeLabel(
       timeRange

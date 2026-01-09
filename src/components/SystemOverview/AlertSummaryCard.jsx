@@ -130,7 +130,11 @@ const AlertSummaryCard = ({
             </StatusIcon>
             <StatusTextContainer>
               <StatusLabel>Open</StatusLabel>
-              <StatusCount>{displayData.openCount}</StatusCount>
+              <StatusCount>
+                {(displayData?.safetyAlerts?.open || 0) +
+                  (displayData?.securityAlerts?.open || 0) +
+                  (displayData?.systemAlerts?.open || 0)}
+              </StatusCount>
             </StatusTextContainer>
           </StatusCardTop>
           <StatusDescription>Still Waiting for Action</StatusDescription>
@@ -142,7 +146,9 @@ const AlertSummaryCard = ({
             </StatusIcon>
             <StatusTextContainer>
               <StatusLabel>Acknowledged</StatusLabel>
-              <StatusCount>{displayData.acknowledgedCount}</StatusCount>
+              <StatusCount>{(displayData?.safetyAlerts?.acknowledged || 0) +
+                (displayData?.securityAlerts?.acknowledged || 0) +
+                (displayData?.systemAlerts?.acknowledged || 0)}</StatusCount>
             </StatusTextContainer>
           </StatusCardTop>
           <StatusDescription>Confirmed But Not Yet Resolved</StatusDescription>
@@ -154,7 +160,9 @@ const AlertSummaryCard = ({
             </StatusIcon>
             <StatusTextContainer>
               <StatusLabel>Resolved</StatusLabel>
-              <StatusCount>{displayData.resolvedCount}</StatusCount>
+              <StatusCount>{(displayData?.safetyAlerts?.resolved || 0) +
+                (displayData?.securityAlerts?.resolved || 0) +
+                (displayData?.systemAlerts?.resolved || 0)}</StatusCount>
             </StatusTextContainer>
           </StatusCardTop>
           <StatusDescription>Fully Addressed and Closed</StatusDescription>
