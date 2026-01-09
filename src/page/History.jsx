@@ -67,21 +67,11 @@ const History = () => {
     setAlertCategoryFilter(e.target.value);
   };
 
-  // Convert filter to dateRange format for API
-  const getDateRange = () => {
-    if (selectedFilter === "lastMonth") {
-      return "30 days";
-    } else if (selectedFilter === "last3Months") {
-      return "90 days";
-    } else {
-      return "7 days";
-    }
-  };
-
   // Fetch dashboard data with date range
   const { data: dashboardData } = useQuery({
     queryKey: ["dashboardHistory", user?.email, selectedFilter],
-    queryFn: () => getDashboard(user?.email || "", 1000, getDateRange()),
+    queryFn: () =>
+      getDashboard(user?.email || "", 1000, dateRangeMap[selectedFilter]),
     enabled: !!user?.email,
     refetchInterval: 60000, // Refetch every 1 minute
     staleTime: 60000, // Cache for 1 minute

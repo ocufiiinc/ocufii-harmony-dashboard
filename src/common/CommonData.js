@@ -10,6 +10,7 @@ import shopLogo from "../assets/images/shop.png";
 import helpLogo from "../assets/images/help.png";
 import logoutLogo from "../assets/images/logout2.png";
 import { ROUTE } from "./Routes";
+import moment from "moment";
 export const MenuItems = [
   {
     id: "dashboard",
@@ -79,3 +80,14 @@ export const MenuItems = [
     icon: logoutLogo,
   },
 ];
+
+export const dateRangeMap = {
+  "24hours": "24hours",
+  "7days": "7",
+  "15days": "15",
+  "30days": "30",
+  lastMonth: "30",
+  last3Months: "90",
+  lastWeek: "7",
+  thisMonth: (moment().diff(moment().startOf("month"), "days") + 1).toString(),
+};

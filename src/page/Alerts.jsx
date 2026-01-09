@@ -25,6 +25,7 @@ import AlertActionModal from "../components/AlertActionModal/AlertActionModal";
 import { alertsChartData } from "../common/ExampleData";
 import { formatDate, formatTime } from "../utility/TimeFormat";
 import { getDeviceIcon, getSafetyAlertIcon } from "../utility/DeviceMapping";
+import { dateRangeMap } from "../common/CommonData";
 const Alerts = () => {
   const { user } = useUser();
   const navigate = useNavigate();
@@ -33,15 +34,6 @@ const Alerts = () => {
   const [selectedAlertType, setSelectedAlertType] = useState("all");
   const [alertActionAlert, setAlertActionAlert] = useState(null);
   const queryClient = useQueryClient();
-
-  // Map dropdown values to API date range format
-  const dateRangeMap = {
-    "24hours": "24 hours",
-    "7days": "7 days",
-    "15days": "15 days",
-    "30days": "30 days",
-    thisMonth: "this month",
-  };
 
   // Fetch dashboard data
   const { data, isLoading, isError, error } = useQuery({

@@ -2,11 +2,7 @@ import api from "../common/ConfigAxios";
 import { APIROUTES } from "../common/ApiRoutes";
 import Toast from "../utility/Toast";
 
-export const getDashboard = async (
-  email,
-  limit = 1000,
-  dateRange = "24 hours"
-) => {
+export const getDashboard = async (email, limit = 1000, dateRange = "all") => {
   try {
     const response = await api.get(
       APIROUTES.GET_ACTIVE_ALERTS(email, limit, dateRange)

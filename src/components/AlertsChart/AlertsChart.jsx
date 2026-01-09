@@ -24,6 +24,7 @@ import {
   CustomDropdownMenu,
   CustomDropdownItem,
 } from "../../styles/Alert.styled";
+import { dateRangeMap } from "../../common/CommonData";
 
 // Register ChartJS components
 ChartJS.register(
@@ -42,14 +43,6 @@ const AlertsChart = () => {
   const [selectedType, setSelectedType] = useState("total");
   const [selectedRange, setSelectedRange] = useState("7days");
   const [isTypeDropdownOpen, setIsTypeDropdownOpen] = useState(false);
-
-  // Map dropdown values to API date range format
-  const dateRangeMap = {
-    "24hours": "24 hours",
-    "7days": "7 days",
-    "15days": "15 days",
-    "30days": "30 days",
-  };
 
   // Fetch dashboard data for chart
   const { data: apiData } = useQuery({
