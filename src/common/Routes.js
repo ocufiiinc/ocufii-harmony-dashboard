@@ -18,4 +18,5 @@ export const ROUTE = {
   EMAIL_VERIFIED: "/email_verified",
   INVITE_CONTACT: "/invite_contact",
   ACCEPT_INVITE: "/accept_inivite",
+  MAP: "/map",
 };

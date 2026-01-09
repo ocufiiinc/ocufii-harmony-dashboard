@@ -35,6 +35,7 @@ import ResendEmail from "./page/email/ResendEmail";
 import EmailVerified from "./page/email/EmailVerified";
 import InviteContact from "./page/safetyNetwork/InviteContact";
 import AcceptInvite from "./page/safetyNetwork/AcceptInvite";
+import Map from "./page/Map";
 
 const AppRoutes = () => {
   const { isAuthenticated, isLoading } = useUser();
@@ -196,6 +197,14 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute>
             <Settings />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={ROUTE.MAP}
+        element={
+          <ProtectedRoute>
+            <Map />
           </ProtectedRoute>
         }
       />

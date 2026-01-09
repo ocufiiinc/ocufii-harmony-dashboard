@@ -1056,17 +1056,24 @@ const AlertDetailMap = ({
           </button>
         `;
         this._container.onclick = () => {
-          const center = map.getCenter();
-          const zoom = map.getZoom();
-          const pitch = map.getPitch();
-          const bearing = map.getBearing();
+          const center = this._map.getCenter();
+          const zoom = this._map.getZoom();
 
-          // Create URL with current map state
-          const mapUrl =
-            window.location.origin +
-            window.location.pathname +
-            `#/map?lng=${center.lng}&lat=${center.lat}&zoom=${zoom}&pitch=${pitch}&bearing=${bearing}` +
-            `&alert=${selectedAlert?.id || ""}&category=${category}`;
+          // Construct URL with map state and alert information
+          const params = new URLSearchParams({
+            lng: center.lng.toFixed(6),
+            lat: center.lat.toFixed(6),
+            zoom: zoom.toFixed(2),
+            alert: selectedAlert?.id || "",
+            category: category || "Safety",
+            title: selectedAlert?.title || "",
+            duration: selectedAlert?.duration || "",
+            reason: selectedAlert?.notificationReason || "",
+          });
+
+          const url = `${window.location.origin}${
+            window.location.pathname
+          }#/map?${params.toString()}`;
 
           // Open in new window with specific dimensions
           const width = 1200;
@@ -1075,7 +1082,7 @@ const AlertDetailMap = ({
           const top = (window.screen.height - height) / 2;
 
           window.open(
-            mapUrl,
+            url,
             "MapView",
             `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes,status=yes`
           );
