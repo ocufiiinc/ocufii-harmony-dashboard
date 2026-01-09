@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useTheme } from "styled-components";
 import { DashboardContent } from "../styles/Dashboard.styled";
 import DashboardLayout from "../Layout/DashboardLayout";
 import DataTable from "../components/DataTable";
@@ -20,6 +21,7 @@ import { Loader } from "../styles/Loader";
 const Devices = () => {
   const [selectedFilter, setSelectedFilter] = useState("All");
   const { user } = useUser();
+  const theme = useTheme();
 
   const {
     data: devicesData,
@@ -172,7 +174,13 @@ const Devices = () => {
             padding: "0 24px",
           }}
         >
-          <h1 style={{ margin: 0, fontSize: "28px", fontWeight: "450" }}>
+          <h1
+            style={{
+              margin: 0,
+              fontSize: theme.fontSize.xxl,
+              fontWeight: theme.fontWeight.semibold,
+            }}
+          >
             Devices
           </h1>
           <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>

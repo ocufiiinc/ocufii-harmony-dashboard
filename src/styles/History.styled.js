@@ -24,7 +24,7 @@ export const HistoryHeader = styled.div`
 
 export const HistoryTitle = styled.h1`
   font-size: ${({ theme }) => theme.fontSize.xxl};
-  font-weight: ${({ theme }) => theme.fontWeight.bold};
+  font-weight: ${({ theme }) => theme.fontWeight.semibold};
   color: ${({ theme }) => theme.colors.text};
   margin: 0;
 

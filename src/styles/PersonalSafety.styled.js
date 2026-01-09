@@ -6,14 +6,6 @@ export const SafetyContainer = styled.div`
   margin: 0 auto;
 `;
 
-export const PageTitle = styled.h1`
-  font-size: 28px;
-  font-weight: 450;
-  color: #212529;
-  margin: 0 0 24px 0;
-  font-family: "Decimal", sans-serif;
-`;
-
 export const ServiceCard = styled.div`
   background: white;
   border-radius: 12px;

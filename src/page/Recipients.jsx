@@ -9,9 +9,9 @@ import { MdChevronRight, MdDelete } from "react-icons/md";
 import RecipientDetails from "../components/RecipientDetails";
 import deleteImg from "../assets/images/delete.svg";
 import { ROUTE } from "../common/Routes";
+import { PageTitle } from "../styles/SafetyNetwork.styled";
 import {
   RecipientsContainer,
-  PageTitle,
   RecipientsCard,
   EmptyState,
   EmptyStateText,

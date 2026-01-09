@@ -17,7 +17,6 @@ export const AlertsContainer = styled.div`
       font-size: ${({ theme }) => theme.fontSize.xxxl};
       font-weight: ${({ theme }) => theme.fontWeight.semibold};
       margin: 0;
-      text-transform: uppercase;
       letter-spacing: 1px;
 
       @media (max-width: 1440px) {

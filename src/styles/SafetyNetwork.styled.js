@@ -7,8 +7,8 @@ export const SafetyNetworkContainer = styled.div`
 `;
 
 export const PageTitle = styled.h1`
-  font-size: 28px;
-  font-weight: 450;
+  font-size: ${({ theme }) => theme.fontSize.xxl};
+  font-weight: ${({ theme }) => theme.fontWeight.semibold};
   color: #212529;
   margin: 0 0 24px 0;
   font-family: "Decimal", sans-serif;

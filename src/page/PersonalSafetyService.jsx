@@ -9,7 +9,6 @@ import PersonalSafetyModal from "../components/PersonalSafetyModal";
 import AlertButtonsSettings from "../components/AlertButtonsSettings/AlertButtonsSettings";
 import {
   SafetyContainer,
-  PageTitle,
   ServiceCard,
   ServiceLeft,
   InfoIcon,
@@ -46,6 +45,7 @@ import { ROUTE } from "../common/Routes";
 import { useUser } from "../context/UserContext";
 import { getUserSettings } from "../api/SettingsApi";
 import ProfessionalSafetyButton from "../components/AlertButtonsSettings/ProfessionalSafetyButton";
+import { PageTitle } from "../styles/SafetyNetwork.styled";
 
 const PersonalSafetyService = () => {
   const navigate = useNavigate();

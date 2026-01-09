@@ -442,8 +442,8 @@ export const ActiveAlertsSection = styled.div`
 
   h1 {
     color: ${({ theme }) => theme.colors.textPrimary};
-    font-size: ${({ theme }) => theme.fontSize.xl};
-    font-weight: ${({ theme }) => theme.fontWeight.bold};
+    font-size: ${({ theme }) => theme.fontSize.xxxl};
+    font-weight: ${({ theme }) => theme.fontWeight.semibold};
     margin: 0 0 ${({ theme }) => theme.spacing.md} 0;
   }
 
@@ -577,7 +577,7 @@ export const AlertCardContainer = styled.div`
 
 export const AlertCardHeader = styled.div`
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
 
   h3 {
