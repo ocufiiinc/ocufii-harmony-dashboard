@@ -103,7 +103,20 @@ const DashboardLayout = ({ children }) => {
             <MobileMenuToggle onClick={toggleSidebar}>
               {isSidebarOpen ? <RxCross2 /> : <RxHamburgerMenu />}
             </MobileMenuToggle>
-            <img src={ocufiiLogo} alt="Ocufii" />
+            <div
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "10px",
+              }}
+            >
+              <img src={ocufiiLogo} alt="Ocufii" />
+              <span
+                style={{ color: "#000000", fontSize: "16px", fontWeight: 400 }}
+              >
+                BE IN THE KNOWN
+              </span>
+            </div>
           </HeaderLogo>
           <HeaderUser>
             <HeaderNavLinks>
