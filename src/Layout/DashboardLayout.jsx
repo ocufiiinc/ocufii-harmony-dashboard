@@ -46,7 +46,7 @@ const DashboardLayout = ({ children }) => {
   const getCounts = () => {
     const data = overviewData?.data || {};
     return {
-      alerts: data.totalActiveAlerts || 0,
+      alerts: data.totalAlertsCount || 0,
       devices: data.totalDevices || 0,
       safetyNetwork: data.safetyNetworkCount || 0,
       recipients: data.recipientsCount || 0,

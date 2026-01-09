@@ -116,6 +116,15 @@ const AlertCard = ({ category, color, count, alerts, onViewAll, children }) => {
           <span className="label">Active</span>
         </div>
       </AlertCount>
+      {/* Divider above the alerts list */}
+      <div
+        style={{
+          height: "1px",
+          background: "#888",
+          width: "100%",
+          margin: "12px 0",
+        }}
+      />
 
       {showDropdown && (
         <AlertFilterDropdown>
