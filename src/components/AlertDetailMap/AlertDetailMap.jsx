@@ -725,6 +725,7 @@ const AlertDetailMap = ({
     const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${startLng},${startLat};${endLng},${endLat}?geometries=geojson&access_token=${mapboxgl.accessToken}`;
 
     try {
+      Toast.info("Calculating route...");
       const response = await fetch(url);
       const data = await response.json();
 
@@ -782,9 +783,16 @@ const AlertDetailMap = ({
         map.current.fitBounds(bounds, {
           padding: 100,
         });
+
+        Toast.success("Route displayed on map");
+      } else {
+        Toast.error("No route found. Please try again.");
       }
     } catch (error) {
       console.error("Error fetching route:", error);
+      Toast.error(
+        "Failed to load route. Please check your connection and try again."
+      );
     }
   };
 
@@ -2135,6 +2143,7 @@ const AlertDetailMap = ({
             );
           } catch (error) {
             console.error("[Show Route] Error:", error);
+            Toast.error("Failed to show route. Please try again.");
           }
         };
 
